@@ -9,8 +9,8 @@ export default function BookingBar() {
 
   return (
     <div className="booking relative inset-0  h-[208px] w-full flex  bg-[#fff] z-6 bottom-100 rounded-r-[20px]">
-      <div className=" w-full  text-[#000] grid 2xl:grid-cols-[180px_repeat(4,270px)] xl:grid-cols-[60px_repeat(4,240px)] align-center items-center  ">
-          <div className="col-start-2 ">
+      <div className=" w-full  text-[#000] grid 2xl:grid-cols-[120px_repeat(4,270px)] xl:grid-cols-[60px_repeat(4,240px)] align-center items-center  ">
+          <div className="col-start-2 select-none ">
               <SoftForm
                     label="DESTINATION"
                     title="Destination"
@@ -21,7 +21,7 @@ export default function BookingBar() {
                     dropdownOptions={['Hanoi', 'Ho Chi Minh City', 'Da Nang']}
                     />
           </div>
-          <div>
+         <div className="select-none">
                <SoftForm
             label="PERSON"
             title="PERSON"
@@ -45,7 +45,7 @@ export default function BookingBar() {
                   />
             </div>
       </div>
-      <div className="absolute cursor-pointer  inset-y-0 right-0 bg-[#FF7757] hover:bg-[#ffd2c7] text-[#fff] text-[36px] w-[170px] h-full rounded-r-[20px]  px-[20px] py-[60px] flex items-center justify-center">
+      <div className="absolute cursor-pointer select-none  inset-y-0 right-0 bg-[#FF7757] hover:bg-[#ffd2c7] text-[#fff] text-[36px] w-[170px] h-full rounded-r-[20px]  px-[20px] py-[60px] flex items-center justify-center">
         <div className=" ">
           Book Now
         </div>

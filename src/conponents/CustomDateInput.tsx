@@ -7,6 +7,7 @@ import { format } from "date-fns";
 
 interface DatePickerComponentProps {
   label: string;
+
 }
 
 const DatePickerComponent = (props: DatePickerComponentProps) => {
