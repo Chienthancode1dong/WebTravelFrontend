@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image';
 import images from '@/../public/image';
 import { Button } from './Button';
+import Link from 'next/link';
 
 interface Header{
   opacity:string;
@@ -58,7 +59,7 @@ const Header = (props : Header) => {
 
       {/* Auth */}
       <div className="hidden sm:flex gap-6 items-center text-[18px] ">
-        <span className="cursor-pointer select-none">Login</span>
+        <Link href={'/login'} className="cursor-pointer select-none">Login</Link>
         <Button color="orange" className='px-3 py-2'>Sign up</Button>
       </div>
 
