@@ -34,7 +34,7 @@ const TourAvail = () => {
     scrollToIndex(prevIndex)
   }
   return (
-      <div className="w-full h-[706px] bg-white text-black  ">
+      <div className="w-full h-[806px] bg-white text-black  ">
         <div className="mt-[70px] w-full h-[165px] grid 2xl:grid-cols-[120px_1fr_120px]  xl:grid-cols-[60px_1fr_60px]  grid-cols-[50px_1fr_120px]">
           <div ref={ref} className={`relative w-full max-h-[165px] select-none col-start-2 transition-all duration-900 ease-out transform ${
                   isIntersecting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'

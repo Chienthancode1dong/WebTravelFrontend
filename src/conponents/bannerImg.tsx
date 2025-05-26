@@ -14,7 +14,7 @@ const BannerImg = ({ scrollRef }: BanneringProps) =>{
   return (
     <div 
      ref={scrollRef}
-    className='col-span-3 BannerImg my-auto  w-full flex items-center h-[500px] overflow-x-auto scroll-smooth snap-x hide-scrollbar flex gap-4 2xl:px-[s60px] px-[60px]'>
+    className='col-span-3 BannerImg my-auto  w-full flex items-center h-[500px] overflow-x-auto scroll-smooth snap-x hide-scrollbar flex gap-4 2xl:px-[120px] px-[60px]'>
     {banners.map((banner, index) => {
   const imageSrc = Array.isArray(banner.src) ? banner.src[0] : banner.src;
   return (

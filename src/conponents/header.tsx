@@ -59,7 +59,7 @@ const Header = (props : Header) => {
       {/* Auth */}
       <div className="hidden sm:flex gap-6 items-center text-[18px] ">
         <span className="cursor-pointer select-none">Login</span>
-        <Button color="orange" className='px-3 py-2'>Sign up</Button>
+        <Button  color="orange" className='px-3 py-2'>Sign up</Button>
       </div>
 
       {/* Mobile menu icon */}

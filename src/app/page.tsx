@@ -2,7 +2,7 @@
 
 import Header from "@/conponents/header";
 import Hero from "@/app/sections/hero";
-import Destinations from "@/app/sections/Destinations"; 
+import Comment from "@/app/sections/comment"; 
 import TourAvail from "./sections/tourAvail";
 export default function Home() {
   return (
@@ -17,6 +17,7 @@ export default function Home() {
       {/* <Destinations /> */}
 
       <TourAvail/>
+      <Comment />
     </main>
   );
 }
