@@ -3,13 +3,14 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image';
 import images from '@/../public/image';
 import { Button } from './Button';
+import Link from 'next/link';
 
 interface Header{
   opacity:string;
 }
 const Header = (props : Header) => {
   const [activeTab, setActiveTab] = useState('Home');
-  const navItems = ['Home', 'Explore', 'Blog', 'Contact'];
+  const navItems = ['Home','Hotel', 'Explore', 'Blog', 'Contact'];
   const headerRef = useRef<HTMLDivElement>(null);
   const [isSticky, setIsSticky] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -32,6 +33,7 @@ const Header = (props : Header) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [headerHeight]);
 
+
   const renderHeaderContent = () => (
     <div className="w-full max-w-screen-3xl grid 2xl:grid-cols-[120px_1fr_120px] xl:grid-cols-[60px_1fr_60px]  grid-cols-[50px_1fr_120px] h-[70px] text-white z-10">
       <div className='col-start-2 col-end-2  h-full flex items-center justify-between'>
@@ -42,18 +44,25 @@ const Header = (props : Header) => {
 
       {/* Nav */}
       <nav className="hidden md:flex gap-8 text-[16px] 2xl:text-[18px]">
-        {navItems.map(item => (
-          <div
-            key={item}
-            className="w-[90px] cursor-pointer flex flex-col items-center select-none"
-            onClick={() => setActiveTab(item)}
-          >
-            <span className={`${activeTab === item ? 'font-bold' : ''}`}>{item}</span>
-            {activeTab === item && (
-              <div className="h-[3px] w-[70%] bg-[#ff7757] mt-1 transition-all"></div>
-            )}
-          </div>
-        ))}
+      {navItems.map((item) => {
+      const isActive = activeTab === item;
+      const link = `${item.toLowerCase()}` === 'home' ? '/' :`/${item.toLowerCase()}`;
+
+  return (
+    <Link
+      key={item}
+      href={link}
+      onClick={() => setActiveTab(item)}
+      className="w-[90px] flex flex-col items-center select-none"
+    >
+      <span className={`text-[16px] 2xl:text-[18px] ${isActive ? 'font-bold' : ''}`}>
+        {item}
+      </span>
+      {isActive && <div className="h-[3px] w-[70%] bg-[#ff7757] mt-1 transition-all" />}
+    </Link>
+  );
+})}
+
       </nav>
 
       {/* Auth */}
