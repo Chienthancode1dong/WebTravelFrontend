@@ -1,3 +1,5 @@
+
+'use client';
 import { useEffect, useRef, useState, RefObject } from 'react';
 
 export function useInView<T extends HTMLElement = HTMLElement>(

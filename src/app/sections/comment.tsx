@@ -5,7 +5,7 @@ import Title from "@/conponents/Title";
 import NextPrevButton from "@/conponents/NextPrevButton";
 import { useInView } from '@/hook/useInView';
 import { Button } from '@/conponents/Button';
-import { ReviewList } from "@/conponents/ReviewList";
+import ReviewList from '@/conponents/ReviewList';
 interface Review {
   id: number | string;
   name: string;

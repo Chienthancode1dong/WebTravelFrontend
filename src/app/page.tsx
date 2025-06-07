@@ -1,4 +1,4 @@
-'use client'
+
 
 import Header from "@/conponents/header";
 import Hero from "@/app/sections/hero";
