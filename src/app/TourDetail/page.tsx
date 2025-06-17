@@ -5,7 +5,7 @@ import Image from 'next/image';
 import banners from '@/../public/banners.jsx';
 import {Button} from '@/conponents/Button';
 import StarRating from '@/conponents/StarRating';
-
+import {Clock,UsersRound } from 'lucide-react'
 const Page = () => {
   const [selectedIndex, setSelectedIndex] = useState(0); // state để lưu ảnh đang chọn
 
@@ -14,15 +14,22 @@ const images: string[] = Array.isArray(banners[0].src)
   ? banners[0].src
   : [banners[0].src];
 
+// Dữ liệu mẫu cho lịch trình tour
+const availableTours = [
+  { date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
+  { date: '2025-07-15', seats: 8, price: '5,200,000 VND' },
+  { date: '2025-08-01', seats: 12, price: '5,500,000 VND' },
+];
+
 
 
   return (
     <div className="w-full min-h-screen z-0 relative">
       
-              <div className=' fixed  2xl:right-30 right-20 top-[170px] h-[200px] w-[350px]  shadow-xl/30 rounded-[26px] flex flex-col items-center justify-center gap-2 p-5'>
+              {/* <div className=' fixed  2xl:right-30 right-20 top-[170px] h-[200px] w-[350px]  shadow-lg/20 rounded-[26px] flex flex-col items-center justify-center gap-2 p-5'>
                    <p className="text-[26px] text-[#FFC107] font-normal">Giá tour: {banners[0].price}</p>
                    <Button  color="orange" className='w-60 h-[35px] mx-auto' > check it now</Button>
-              </div>
+              </div> */}
       
         
       <Header opacity='' />
@@ -37,11 +44,11 @@ const images: string[] = Array.isArray(banners[0].src)
 
                 </div>
 
-        <div className='col-start-2 w-full h-full py-5 flex '>
+        <div className='col-start-2 w-full h-[600px] py-5 flex '>
          
       
           {/* Ảnh lớn */}
-          <div className='2xl:w-[1000px] 2xl:h-900px] w-[860px] h-[500px]   '>
+          <div className='2xl:w-[1050px] 2xl:h-900px] w-[1000px] h-[500px]   '>
             <Image
               src={images[selectedIndex]}
               alt={`Main Image`}
@@ -52,15 +59,15 @@ const images: string[] = Array.isArray(banners[0].src)
           </div>
 
           {/* Ảnh nhỏ */}
-          <div className='w-[150px] h-[600px] flex flex-col gap-3 px-3  '>
+          <div className='w-[400px] h-[600px] flex flex-col gap-3 px-3  '>
             {images.map((img, i) => (
               <Image
                 key={i}
                 src={img}
                 alt={`Thumbnail ${i + 1}`}
-                width={120}
+                width={320}
                 height={120}
-                className={`w-[80px] h-[80px] object-cover rounded-[26px] cursor-pointer select-none shadow-xl/30 ${
+                className={`w-[320px] h-[120px] object-cover rounded-[26px] cursor-pointer select-none shadow-xl/30 ${
                   selectedIndex === i ? 'ring-4 ring-[#ff7757]' : ''
                 }`}
                 onClick={() => setSelectedIndex(i)}
@@ -75,19 +82,62 @@ const images: string[] = Array.isArray(banners[0].src)
          
         </div>
            {/* thông tin */}
-           <div className='col-start-2 w-full h-full py-5 flex'>
-                  <div className=' 2xl:w-[600px] w-[500px] h-[600px] rounded-[26px] flex flex-col select-none p-3 shadow-xl/30 '>
+           <div className='col-start-2 w-full h-[250px] py-5 flex '>
+                  <div className=' 2xl:w-[1050px] w-[1000px] h-[250px]  flex flex-col select-none p-3 '>
                
               
                 <div className='flex flex-col mt-5'>
-                  <p className="text-[16px] ">{banners[0].description}</p>
-                  <p className="text-[20px] ">Thời gian: {banners[0].duration}</p>
-                  <p className="text-[20px]  ">Số khách: {banners[0].numberOfPeople}</p>
-                 
+                  <h2 className='text-[30px]'>Description</h2>
+                  <p className="text-[16px] my-5 ">{banners[0].description}</p>
+                  <div className='w-full flex gap-5'>
+                    <span className=' flex gap-1'>
+                     <Clock  size={24} />
+                     <span className=" text-[20px] "> 
+                      Duration: {banners[0].duration}</span>
+                    </span>
+                   <span className=' flex gap-1'>
+                     <UsersRound  size={24} />
+                     <span className=" text-[20px]  ">People: {banners[0].numberOfPeople}</span>
+                   </span>
+                  </div>
+               
                 </div>
+                     <div className='2xl:w-[1050px] w-[1000px] border mt-5'></div>
               </div>
+         
            </div>
-          
+           {/* lịch trình tour */}
+            <div className='col-start-2 w-full h-full py-5 flex ' >
+              
+               <div className=' 2xl:w-[1050px] w-[1000px] h-[600px] rounded-[26px] flex flex-col select-none p-3 '>
+                <h2 className='text-[30px]'>Tour available</h2>
+                <div className='mt-5'>
+                  <table className="w-full text-left border border-gray-200 rounded-lg overflow-hidden">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="py-2 px-4">Ngày khởi hành</th>
+                        <th className="py-2 px-4">Số chỗ còn</th>
+                        <th className="py-2 px-4">Giá</th>
+                        <th className="py-2 px-4">Đặt tour</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {availableTours.map((tour, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="py-2 px-4">{tour.date}</td>
+                          <td className="py-2 px-4">{tour.seats}</td>
+                          <td className="py-2 px-4">{tour.price}</td>
+                          <td className="py-2 px-4">
+                            <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className='2xl:w-[1050px] w-[1000px] border mt-5'></div>
+               </div>
+            </div>
       </div>
     </div>
   )

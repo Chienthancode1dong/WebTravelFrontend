@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { assets, facilityIcons, roomCommonData, roomsDummyData } from '../../../../public/assets/assets'
 import StartRating from '../../../components/StartRating'
@@ -45,7 +45,8 @@ interface RoomType {
 }
 
 const RoomDetails = () => {
-    const { id } = useParams();
+    const params = useParams() as { id?: string };
+    const id = params.id;
     console.log("Room ID:", id); // Kiểm tra xem id có được lấy đúng không
     const [room, setRoom] = useState<RoomType | null>(null);
     const [mainImage, setMainImage] = useState<string | StaticImageData>("");

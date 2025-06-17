@@ -5,7 +5,7 @@ import FeaturedDestination from '@/components/FeaturedDestination';
 import ExclusiveOffers from '@/components/ExclusiveOffers';
 import Preview from '@/components/Preview';
 import NewsLetter from '@/components/NewsLetter';
-import Footer from '@/components/Footer';
+
 import Navbar from '@/components/Navbar';
 const Home: React.FC = () => {
   return (
@@ -16,7 +16,7 @@ const Home: React.FC = () => {
       <ExclusiveOffers />
       <Preview />
       <NewsLetter />
-      <Footer/>
+     
     </div>
   );
 };

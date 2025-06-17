@@ -74,7 +74,12 @@ const AuthForm = () => {
             </div>
 
             <div className="flex items-center justify-center gap-3 mb-2 px-8">
-                <button className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
+                <button
+                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
+                    title="Đăng nhập với Google"
+                    aria-label="Đăng nhập với Google"
+                    type="button"
+                >
                     <Image
                         src="/search.png"
                         alt="Google"
@@ -83,7 +88,12 @@ const AuthForm = () => {
                         className="w-5 h-5"
                     />
                 </button>
-                <button className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
+                <button
+                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
+                    title="Đăng nhập với Facebook"
+                    aria-label="Đăng nhập với Facebook"
+                    type="button"
+                >
                     <Image
                         src="/facebook.png"
                         alt="Facebook"
@@ -92,7 +102,12 @@ const AuthForm = () => {
                         className="w-5 h-5"
                     />
                 </button>
-                <button className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
+                <button
+                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
+                    title="Đăng nhập với X"
+                    aria-label="Đăng nhập với X"
+                    type="button"
+                >
                     <Image
                         src="/twitter.png"
                         alt="X"
@@ -134,6 +149,8 @@ const AuthForm = () => {
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                                 >
                                     {showPassword ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -183,6 +200,7 @@ const AuthForm = () => {
                         <div>
                             <p className="text-sm text-gray-500 mb-1">Full Name</p>
                             <input
+                                {...registerSignup("fullname", { required: true })}
                                 type="text"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
                             />
@@ -190,6 +208,7 @@ const AuthForm = () => {
                         <div>
                             <p className="text-sm text-gray-500 mb-1">Email</p>
                             <input
+                                {...registerSignup("email", { required: true })}
                                 type="email"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
                             />
@@ -198,6 +217,7 @@ const AuthForm = () => {
                             <p className="text-sm text-gray-500 mb-1">Password</p>
                             <div className="relative">
                                 <input
+                                    {...registerSignup("password", { required: true })}
                                     type={showPassword ? "text" : "password"}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
                                 />
@@ -205,6 +225,8 @@ const AuthForm = () => {
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                                 >
                                     {showPassword ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -224,6 +246,7 @@ const AuthForm = () => {
                             <p className="text-sm text-gray-500 mb-1">Re-enter password</p>
                             <div className="relative">
                                 <input
+                                    {...registerSignup("repassword", { required: true })}
                                     type={showPassword ? "text" : "password"}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
                                 />
@@ -231,6 +254,8 @@ const AuthForm = () => {
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                                 >
                                     {showPassword ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
