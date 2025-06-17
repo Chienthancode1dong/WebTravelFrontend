@@ -13,6 +13,7 @@ export const ENDPOINTS = {
   RESET_PASSWORD: '/auth/reset-password',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
+  LOGIN_FACEBOOK: '/auth/facebook',
 };
 
 export default { API_BASE_URL, ENDPOINTS };

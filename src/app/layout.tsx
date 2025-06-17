@@ -1,5 +1,5 @@
 import "./globals.css";
-
+import { ToastContainer, toast } from 'react-toastify'
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -8,9 +8,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-       
       >
-       
+        <ToastContainer />
         {children}
       </body>
     </html>
