@@ -1,6 +1,6 @@
 'use client'
 
-import Title from '../../../components/Title'
+import Title from '@/components/Title'
 import { assets} from '../../../../public/assets/assets'
 import Image from 'next/image'
 import { useState } from 'react'
