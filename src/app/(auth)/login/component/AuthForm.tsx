@@ -1,291 +1,194 @@
 'use client'
 import { useState } from "react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-const AuthForm = () => {
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLogin, setIsLogin] = useState(true);
-    const url = process.env.NEXT_PUBLIC_API_URL;
-    const router = useRouter();
-    const { register: registerLogin, handleSubmit: handleSubmitLogin } = useForm();
-    const { register: registerSignup, handleSubmit: handleSubmitSignup } = useForm();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+import authApi from "@/lib/auth-api";
+import AuthHeader from "./AuthHeader";
+import AuthTabs from "./AuthTabs";
+import SocialLoginButtons from "./SocialLoginButtons";
+import LoginForm from "./LoginForm";
+import SignupForm from "./SignupForm";
+
+import ForgotPasswordModal from "./ForgotPasswordModal";
+import EmailVerificationModal from "./EmailVerificationModal";
+
+// Define ToastHook interface để tránh circular dependency
+interface ToastHook {
+    showSuccess: (title: string, message?: string) => void;
+    showError: (title: string, message?: string) => void;
+    showWarning: (title: string, message?: string) => void;
+    showInfo: (title: string, message?: string) => void;
+}
+
+interface AuthFormProps {
+    toast?: ToastHook;
+}
+
+const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback functions if no toast is provided
+    const safeToast: ToastHook = {
+        showSuccess: toast?.showSuccess || ((title, message) => console.log('Success:', title, message)),
+        showError: toast?.showError || ((title, message) => console.error('Error:', title, message)),
+        showWarning: toast?.showWarning || ((title, message) => console.warn('Warning:', title, message)),
+        showInfo: toast?.showInfo || ((title, message) => console.info('Info:', title, message))
     };
+
+    const [isLogin, setIsLogin] = useState(true);
+    const [loading, setLoading] = useState(false); const [error, setError] = useState<string | null>(null);
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+    const [registrationEmail, setRegistrationEmail] = useState('');
+    const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+
+    const router = useRouter();
 
     const toggleView = (view: string) => {
         setIsLogin(view === 'login');
+        setError(null);
     };
-    const onLoginSubmit = async (value: any) => {
+
+    const onLoginSubmit = async (data: any) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.post(`${url}/api/v1/auth/login`, {
-                username: value.email,
-                password: value.password
-            },
-            {
-                withCredentials: true
-            });
-            if (response.status === 201) {
-                // Handle successful login
-                console.log('Login successful:', response.data);
-                router.push('/');
+
+            const response = await authApi.login(data.email, data.password);
+            // Lưu token và thông tin người dùng
+            localStorage.setItem('access_token', response.accessToken);
+            try {
+                const user = await authApi.getProfile();
+                localStorage.setItem('userId', user.userId);
+                localStorage.setItem('email', user.email);
+                localStorage.setItem('role', user.role || 'USER');
+            } catch (error: any) {
+                const userErrorMessage = error.response?.data?.message || 'Failed to fetch user profile';
+                safeToast.showError('Profile Fetch Failed', userErrorMessage);
+                console.error('Profile fetch error:', userErrorMessage);
             }
+            safeToast.showSuccess('Login Successful', 'Welcome back! Redirecting to dashboard...');
+            setTimeout(() => {
+                router.push('/');
+            }, 1500);
+
         } catch (error: any) {
-            console.error('Login error:', error);
-            setError(error.message || 'An unexpected error occurred');
+            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+            setError(errorMessage);
+            safeToast.showError('Login Failed', errorMessage);
         } finally {
             setLoading(false);
         }
+    };
 
-    }
+    const onSignupSubmit = async (data: any) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Store email for verification modal
+            setRegistrationEmail(data.email);
+
+            // Call signup API
+            const response = await authApi.register(data.fullName, data.email, data.password);
+
+            // Show verification modal after successful registration  
+            setShowVerificationModal(true);
+            safeToast.showSuccess('Registration Successful', 'Please check your email for verification code');
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+            setError(errorMessage);
+            safeToast.showError('Registration Failed', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onForgotPassword = async (email: string) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authApi.forgotPassword(email);
+
+            setForgotPasswordEmail(email);
+            setShowForgotPasswordModal(true);
+            safeToast.showInfo('Reset Email Sent', 'Please check your email for password reset instructions');
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to send reset email';
+            setError(errorMessage);
+            safeToast.showError('Reset Email Failed', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    }; const onResetPassword = async (data: { password: string; confirmPassword: string }) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authApi.resetPassword(forgotPasswordEmail, data.password);
+
+            setShowForgotPasswordModal(false);
+            setIsLogin(true);
+            setError(null);
+            safeToast.showSuccess('Password Reset Successful', 'Please login with your new password');
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to reset password';
+            setError(errorMessage);
+            safeToast.showError('Password Reset Failed', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="w-full md:w-1/2 p-8 space-y-6">
-            <div className="text-center mb-8">
-                <h1 className="text-3xl font-light tracking-wider">Travel Vougaix</h1>
-                <p className="text-sm text-gray-600">Explore More. Experience Life.</p>
+            <AuthHeader
+                title={isLogin ? 'Journey Begins' : 'Join the Adventure'}
+                subtitle=""
+                description={isLogin ? 'Log In with Open account' : 'Create your travel account'}
+            />
+
+            <AuthTabs isLogin={isLogin} onToggle={toggleView} />
+
+            <SocialLoginButtons />
+
+            <div className="relative overflow-hidden h-[320px]">                <div className={`transition-transform duration-500 ease-in-out absolute w-full ${isLogin ? 'translate-x-0' : '-translate-x-full'}`}>                    <LoginForm
+                onSubmit={onLoginSubmit}
+                loading={loading}
+                error={error}
+                onForgotPassword={onForgotPassword}
+                showWarning={safeToast.showWarning}
+            />
             </div>
 
-            <div className="flex gap-4 justify-center px-8 mb-5">
-                <button
-                    className={`px-6 py-2 border border-gray-300 rounded-md flex-1 transition-all duration-300 ${!isLogin ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
-                    onClick={() => toggleView('signup')}
-                >
-                    Sign Up
-                </button>
-                <button
-                    className={`px-6 py-2 rounded-md flex-1 transition-all duration-300 ${isLogin ? 'bg-black text-white' : 'border border-gray-300 hover:bg-gray-100'}`}
-                    onClick={() => toggleView('login')}
-                >
-                    Log In
-                </button>
-            </div>
-
-            <div className="">
-                <div className="text-2xl font-light ml-8">{isLogin ? 'Journey Begins' : 'Join the Adventure'}</div>
-                <div className="px-8 text-sm text-gray-500">
-                    {isLogin ? 'Log In with Open account' : 'Create your travel account'}
+                <div className={`transition-transform duration-500 ease-in-out absolute w-full ${!isLogin ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <SignupForm
+                        onSubmit={onSignupSubmit}
+                        loading={loading}
+                    />
                 </div>
             </div>
+            <EmailVerificationModal
+                isOpen={showVerificationModal}
+                onClose={() => setShowVerificationModal(false)}
+                onSuccess={() => {
+                    setShowVerificationModal(false);
+                    setIsLogin(true);
+                    setError(null);
+                    safeToast.showSuccess('Email Verified', 'Your account has been verified successfully!');
+                }}
+                email={registrationEmail}
+            />
 
-            <div className="flex items-center justify-center gap-3 mb-2 px-8">
-                <button
-                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
-                    title="Đăng nhập với Google"
-                    aria-label="Đăng nhập với Google"
-                    type="button"
-                >
-                    <Image
-                        src="/search.png"
-                        alt="Google"
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                    />
-                </button>
-                <button
-                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
-                    title="Đăng nhập với Facebook"
-                    aria-label="Đăng nhập với Facebook"
-                    type="button"
-                >
-                    <Image
-                        src="/facebook.png"
-                        alt="Facebook"
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                    />
-                </button>
-                <button
-                    className="p-2 bg-white rounded-full border border-gray-300 w-16 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
-                    title="Đăng nhập với X"
-                    aria-label="Đăng nhập với X"
-                    type="button"
-                >
-                    <Image
-                        src="/twitter.png"
-                        alt="X"
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                    />
-                </button>
-            </div>
-
-            <div className="flex items-center px-8">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <div className="px-4 text-sm text-gray-500">or</div>
-                <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-
-
-            <div className="relative overflow-hidden h-[320px]">
-                <div
-                    className={`transition-transform duration-500 ease-in-out absolute w-full ${isLogin ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-4 px-8">
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Email</p>
-                            <input
-                                {...registerLogin("email", { required: true })}
-                                type="text"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                            />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Password</p>
-                            <div className="relative">
-                                <input
-                                    {...registerLogin("password", { required: true })}
-                                    type={showPassword ? "text" : "password"}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                >
-                                    {showPassword ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72 1.07a3 3 0 1 1-4.24-4.24"></path>
-                                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                                        </svg>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center">
-                                <input type="checkbox" className="mr-2 rounded border-gray-300 text-black focus:ring-0" />
-                                Remember me
-                            </label>
-                            <a href="#" className="text-gray-600 hover:underline">Forgot Password?</a>
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center">
-                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Logging in...
-                                </span>
-                            ) : 'Log In'}
-                        </button>
-                    </form>
-                </div>
-
-                <div
-                    className={`transition-transform duration-500 ease-in-out absolute w-full ${!isLogin ? 'translate-x-0' : 'translate-x-full'
-                        }`}
-                >
-                    <form className="space-y-3 px-8">
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                            <input
-                                {...registerSignup("fullname", { required: true })}
-                                type="text"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                            />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Email</p>
-                            <input
-                                {...registerSignup("email", { required: true })}
-                                type="email"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                            />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Password</p>
-                            <div className="relative">
-                                <input
-                                    {...registerSignup("password", { required: true })}
-                                    type={showPassword ? "text" : "password"}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                >
-                                    {showPassword ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72 1.07a3 3 0 1 1-4.24-4.24"></path>
-                                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                                        </svg>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 mb-1">Re-enter password</p>
-                            <div className="relative">
-                                <input
-                                    {...registerSignup("repassword", { required: true })}
-                                    type={showPassword ? "text" : "password"}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                    title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                                >
-                                    {showPassword ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72 1.07a3 3 0 1 1-4.24-4.24"></path>
-                                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                                        </svg>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="flex items-center text-sm">
-                            <label className="flex items-center text-xs">
-                                <input type="checkbox" className="mr-2 rounded border-gray-300 text-black focus:ring-0" />
-                                I agree to the Terms and Privacy Policy
-                            </label>
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full py-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-                        >
-                            Create Account
-                        </button>
-                    </form>
-                </div>
-            </div>
+            {/* Forgot Password Modal */}
+            <ForgotPasswordModal
+                isOpen={showForgotPasswordModal}
+                onClose={() => setShowForgotPasswordModal(false)}
+                onResetPassword={onResetPassword}
+                email={forgotPasswordEmail}
+                loading={loading}
+                error={error}
+            />
         </div>
     );
 }
