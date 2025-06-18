@@ -15,7 +15,7 @@ export const authApi = {
     // Register/Signup  
     async register(fullName: string, email: string, password: string) {
         const response = await apiClient.post(ENDPOINTS.REGISTER, {
-            fullName,
+            name: fullName,
             email,
             password
         });
@@ -26,7 +26,7 @@ export const authApi = {
     async verifyEmail(email: string, otp: string) {
         const response = await apiClient.post(ENDPOINTS.VERIFY_EMAIL, {
             email,
-            otp
+            code: otp
         });
         return response.data;
     },
@@ -35,6 +35,15 @@ export const authApi = {
     async resendOTP(email: string) {
         const response = await apiClient.post(ENDPOINTS.SEND_OTP, {
             email
+        });
+        return response.data;
+    },
+
+    // Verify Forgot Password OTP
+    async verifyForgotPassword(email: string, otp: string) {
+        const response = await apiClient.post(ENDPOINTS.VERIFY_FORGOT_PASSWORD, {
+            email,
+            code: otp
         });
         return response.data;
     },
@@ -48,9 +57,9 @@ export const authApi = {
     },
 
     // Reset Password
-    async resetPassword(email: string, password: string) {
+    async resetPassword(token: string, password: string) {
         const response = await apiClient.post(ENDPOINTS.RESET_PASSWORD, {
-            email,
+            token,
             password
         });
         return response.data;
