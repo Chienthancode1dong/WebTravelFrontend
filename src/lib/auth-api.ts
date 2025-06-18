@@ -78,7 +78,13 @@ export const authApi = {
     async getProfile() {
         const response = await apiClient.get(ENDPOINTS.PROFILE);
         return response.data;
-    }
+    },
+
+    // Facebook Sign In
+    async FacebookSignIn(data: { access_token: string }) {
+        const response = await apiClient.post(ENDPOINTS.LOGIN_FACEBOOK, data);
+        return response.data;
+    },
 };
 
 export default authApi;
