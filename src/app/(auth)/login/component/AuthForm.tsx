@@ -23,6 +23,18 @@ interface AuthFormProps {
     toast?: ToastHook;
 }
 
+// Types for form data
+interface LoginFormData {
+    email: string;
+    password: string;
+}
+
+interface SignupFormData {
+    fullName: string;
+    email: string;
+    password: string;
+}
+
 const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback functions if no toast is provided
     const safeToast: ToastHook = {
         showSuccess: toast?.showSuccess || ((title, message) => console.log('Success:', title, message)),
@@ -58,8 +70,13 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
                 localStorage.setItem('userId', user.userId);
                 localStorage.setItem('email', user.email);
                 localStorage.setItem('role', user.role || 'USER');
-            } catch (error: any) {
-                const userErrorMessage = error.response?.data?.message || 'Failed to fetch user profile';
+            } catch (error: unknown) {
+                let userErrorMessage = 'Failed to fetch user profile';
+                if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
+                    userErrorMessage = (error as any).response.data?.message || userErrorMessage;
+                } else if (error instanceof Error) {
+                    userErrorMessage = error.message;
+                }
                 safeToast.showError('Profile Fetch Failed', userErrorMessage);
                 console.error('Profile fetch error:', userErrorMessage);
             }
@@ -68,8 +85,13 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
                 router.push('/');
             }, 1500);
 
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+        } catch (error: unknown) {
+            let errorMessage = 'An unexpected error occurred';
+            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
+                errorMessage = (error as any).response.data?.message || errorMessage;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             setError(errorMessage);
             safeToast.showError('Login Failed', errorMessage);
         } finally {
@@ -92,8 +114,13 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setShowVerificationModal(true);
             safeToast.showSuccess('Registration Successful', 'Please check your email for verification code');
 
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+        } catch (error: unknown) {
+            let errorMessage = 'An unexpected error occurred';
+            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
+                errorMessage = (error as any).response.data?.message || errorMessage;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             setError(errorMessage);
             safeToast.showError('Registration Failed', errorMessage);
         } finally {
@@ -112,8 +139,13 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setShowForgotPasswordModal(true);
             safeToast.showInfo('Reset Email Sent', 'Please check your email for password reset instructions');
 
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || 'Failed to send reset email';
+        } catch (error: unknown) {
+            let errorMessage = 'Failed to send reset email';
+            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
+                errorMessage = (error as any).response.data?.message || errorMessage;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             setError(errorMessage);
             safeToast.showError('Reset Email Failed', errorMessage);
         } finally {
@@ -131,8 +163,13 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setError(null);
             safeToast.showSuccess('Password Reset Successful', 'Please login with your new password');
 
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || 'Failed to reset password';
+        } catch (error: unknown) {
+            let errorMessage = 'Failed to reset password';
+            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
+                errorMessage = (error as any).response.data?.message || errorMessage;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             setError(errorMessage);
             safeToast.showError('Password Reset Failed', errorMessage);
         } finally {

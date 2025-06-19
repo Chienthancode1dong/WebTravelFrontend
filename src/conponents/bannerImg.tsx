@@ -48,7 +48,7 @@ const BannerImg = ({ scrollRef }: BanneringProps) =>{
         </div>
         <div className='flex items-center text-[26px] justify-between w-full'>
              <p className=" text-[#FFC107] font-normal"> {banner.price}</p>
-                <Link href={`/TourDetail`}>
+                <Link href={`/Tour/${banner.id}/TourDetail`} className=''>
                    <Button color="orange" className="text-[20px] w-[100px]">Chi tiết</Button>
               </Link>
         </div>
@@ -57,7 +57,7 @@ const BannerImg = ({ scrollRef }: BanneringProps) =>{
     </div>
   )
 })}
-   
+     
     </div>
   )
 }
