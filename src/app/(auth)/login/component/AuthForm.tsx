@@ -1,15 +1,15 @@
 'use client'
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import authApi from "@/lib/auth-api";
 import AuthHeader from "./AuthHeader";
 import AuthTabs from "./AuthTabs";
 import SocialLoginButtons from "./SocialLoginButtons";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
-
-import ForgotPasswordModal from "./ForgotPasswordModal";
 import EmailVerificationModal from "./EmailVerificationModal";
+import ForgotPasswordModal from "./ForgotPasswordModal";
+import FPInputEmailModal from "./FPInputEmailModal";
+
 
 // Define ToastHook interface để tránh circular dependency
 interface ToastHook {
@@ -35,20 +35,21 @@ interface SignupFormData {
     password: string;
 }
 
-const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback functions if no toast is provided
+const AuthForm = ({ toast }: AuthFormProps = {}) => {
+    // Provide fallback functions if no toast is provided
     const safeToast: ToastHook = {
         showSuccess: toast?.showSuccess || ((title, message) => console.log('Success:', title, message)),
         showError: toast?.showError || ((title, message) => console.error('Error:', title, message)),
         showWarning: toast?.showWarning || ((title, message) => console.warn('Warning:', title, message)),
         showInfo: toast?.showInfo || ((title, message) => console.info('Info:', title, message))
-    };
-
-    const [isLogin, setIsLogin] = useState(true);
-    const [loading, setLoading] = useState(false); const [error, setError] = useState<string | null>(null);
+    }; const [isLogin, setIsLogin] = useState(true);
     const [showVerificationModal, setShowVerificationModal] = useState(false);
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+    const [showForgotPasswordEmailModal, setShowForgotPasswordEmailModal] = useState(false);
+    const [showForgotPasswordVerificationModal, setShowForgotPasswordVerificationModal] = useState(false);
     const [registrationEmail, setRegistrationEmail] = useState('');
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+    const [forgotPasswordToken, setForgotPasswordToken] = useState(''); // Token từ verification
 
     const router = useRouter();
 
@@ -70,13 +71,8 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
                 localStorage.setItem('userId', user.userId);
                 localStorage.setItem('email', user.email);
                 localStorage.setItem('role', user.role || 'USER');
-            } catch (error: unknown) {
-                let userErrorMessage = 'Failed to fetch user profile';
-                if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
-                    userErrorMessage = (error as any).response.data?.message || userErrorMessage;
-                } else if (error instanceof Error) {
-                    userErrorMessage = error.message;
-                }
+            } catch (error: any) {
+                const userErrorMessage = error.response?.data?.message || 'Failed to fetch user profile';
                 safeToast.showError('Profile Fetch Failed', userErrorMessage);
                 console.error('Profile fetch error:', userErrorMessage);
             }
@@ -85,13 +81,8 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
                 router.push('/');
             }, 1500);
 
-        } catch (error: unknown) {
-            let errorMessage = 'An unexpected error occurred';
-            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
-                errorMessage = (error as any).response.data?.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
             setError(errorMessage);
             safeToast.showError('Login Failed', errorMessage);
         } finally {
@@ -114,13 +105,8 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setShowVerificationModal(true);
             safeToast.showSuccess('Registration Successful', 'Please check your email for verification code');
 
-        } catch (error: unknown) {
-            let errorMessage = 'An unexpected error occurred';
-            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
-                errorMessage = (error as any).response.data?.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
             setError(errorMessage);
             safeToast.showError('Registration Failed', errorMessage);
         } finally {
@@ -139,13 +125,8 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setShowForgotPasswordModal(true);
             safeToast.showInfo('Reset Email Sent', 'Please check your email for password reset instructions');
 
-        } catch (error: unknown) {
-            let errorMessage = 'Failed to send reset email';
-            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
-                errorMessage = (error as any).response.data?.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to send reset email';
             setError(errorMessage);
             safeToast.showError('Reset Email Failed', errorMessage);
         } finally {
@@ -163,13 +144,8 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
             setError(null);
             safeToast.showSuccess('Password Reset Successful', 'Please login with your new password');
 
-        } catch (error: unknown) {
-            let errorMessage = 'Failed to reset password';
-            if (typeof error === 'object' && error !== null && 'response' in error && typeof (error as any).response === 'object' && (error as any).response !== null && 'data' in (error as any).response) {
-                errorMessage = (error as any).response.data?.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to reset password';
             setError(errorMessage);
             safeToast.showError('Password Reset Failed', errorMessage);
         } finally {
@@ -181,50 +157,76 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {    // Provide fallback fun
         <div className="w-full md:w-1/2 p-8 space-y-6">
             <AuthHeader
                 title={isLogin ? 'Journey Begins' : 'Join the Adventure'}
-                subtitle=""
                 description={isLogin ? 'Log In with Open account' : 'Create your travel account'}
             />
 
             <AuthTabs isLogin={isLogin} onToggle={toggleView} />
 
             <SocialLoginButtons />
-
-            <div className="relative overflow-hidden h-[320px]">                <div className={`transition-transform duration-500 ease-in-out absolute w-full ${isLogin ? 'translate-x-0' : '-translate-x-full'}`}>                    <LoginForm
-                onSubmit={onLoginSubmit}
-                loading={loading}
-                error={error}
-                onForgotPassword={onForgotPassword}
-                showWarning={safeToast.showWarning}
-            />
-            </div>
+            <div className="relative overflow-hidden h-[320px]">
+                <div className={`transition-transform duration-500 ease-in-out absolute w-full 
+                    ${isLogin ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <LoginForm
+                        onForgotPassword={onForgotPasswordClick}
+                        onVerificationEmail={onVerificationEmail}
+                        toast={safeToast}
+                    />
+                </div>
 
                 <div className={`transition-transform duration-500 ease-in-out absolute w-full ${!isLogin ? 'translate-x-0' : 'translate-x-full'}`}>
                     <SignupForm
-                        onSubmit={onSignupSubmit}
-                        loading={loading}
+                        onRegistrationSuccess={onRegistrationSuccess}
+                        toast={safeToast}
                     />
                 </div>
-            </div>
-            <EmailVerificationModal
+            </div>            <EmailVerificationModal
                 isOpen={showVerificationModal}
                 onClose={() => setShowVerificationModal(false)}
                 onSuccess={() => {
                     setShowVerificationModal(false);
-                    setIsLogin(true);
-                    setError(null);
-                    safeToast.showSuccess('Email Verified', 'Your account has been verified successfully!');
+
+                    if (isLogin) {
+                        // Nếu đang ở login flow, thông báo thành công và redirect
+                        safeToast.showSuccess('Email Verified Successfully', 'Please login again to continue');
+                        // Có thể tự động login lại hoặc để user login manual
+                        router.push('/');
+                    } else {
+                        // Nếu đang ở signup flow, chuyển về login
+                        setIsLogin(true);
+                        safeToast.showSuccess('Registration Complete', 'Your account has been verified! Please login to continue');
+                        toggleView('login');
+                    }
                 }}
                 email={registrationEmail}
+                type={isLogin ? 'login' : 'signup'}
+                toast={safeToast}
             />
 
-            {/* Forgot Password Modal */}
+            {/* Forgot Password Email Input Modal */}
+            <FPInputEmailModal
+                isOpen={showForgotPasswordEmailModal}
+                onClose={() => setShowForgotPasswordEmailModal(false)}
+                onVerificationEmail={onForgotPasswordEmailSent}
+                toast={safeToast}
+            />
+
+            {/* Forgot Password Verification Modal - Sử dụng EmailVerificationModal */}
+            <EmailVerificationModal
+                isOpen={showForgotPasswordVerificationModal}
+                onClose={() => setShowForgotPasswordVerificationModal(false)}
+                onSuccess={onForgotPasswordVerified}
+                email={forgotPasswordEmail}
+                type="forgot-password"
+                toast={safeToast}
+            />
+
+            {/* Forgot Password Reset Modal */}
             <ForgotPasswordModal
                 isOpen={showForgotPasswordModal}
                 onClose={() => setShowForgotPasswordModal(false)}
-                onResetPassword={onResetPassword}
                 email={forgotPasswordEmail}
-                loading={loading}
-                error={error}
+                token={forgotPasswordToken}
+                toast={safeToast}
             />
         </div>
     );

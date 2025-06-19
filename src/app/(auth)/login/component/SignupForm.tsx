@@ -1,17 +1,46 @@
+'use client'
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
+import authApi from '@/lib/auth-api';
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import LoadingButton from "./LoadingButton";
 
-interface SignupFormProps {
-    onSubmit: (data: any) => void;
-    loading?: boolean;
+interface ToastHook {
+    showSuccess: (title: string, message?: string) => void;
+    showError: (title: string, message?: string) => void;
 }
 
-const SignupForm = ({ onSubmit, loading = false }: SignupFormProps) => {
+interface SignupFormProps {
+    onRegistrationSuccess: (email: string) => void;
+    toast: ToastHook;
+}
+
+const SignupForm = ({ onRegistrationSuccess, toast }: SignupFormProps) => {
+    const [loading, setLoading] = useState(false);
     const { register, handleSubmit } = useForm();
+
+    const onSignupSubmit = async (data: any) => {
+        try {
+            setLoading(true);
+
+            // Call signup API
+            const response = await authApi.register(data.fullName, data.email, data.password);
+
+            // Show verification modal after successful registration
+            onRegistrationSuccess(data.email);
+            toast.showSuccess('Registration Successful', 'Please check your email for verification code');
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+            toast.showError('Registration Failed', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 px-8">
+        <form onSubmit={handleSubmit(onSignupSubmit)} className="space-y-3 px-8">
             <InputField
                 label="Full Name"
                 type="text"

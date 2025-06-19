@@ -1,10 +1,9 @@
 interface AuthHeaderProps {
     title: string;
-    subtitle: string;
     description: string;
 }
 
-const AuthHeader = ({ title, subtitle, description }: AuthHeaderProps) => {
+const AuthHeader = ({ title, description }: AuthHeaderProps) => {
     return (
         <>
             <div className="text-center mb-8">

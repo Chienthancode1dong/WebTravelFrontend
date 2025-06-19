@@ -1,16 +1,21 @@
 'use client'
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import authApi from '@/lib/auth-api';
 import PasswordInput from './PasswordInput';
 import LoadingButton from './LoadingButton';
+
+interface ToastHook {
+    showSuccess: (title: string, message?: string) => void;
+    showError: (title: string, message?: string) => void;
+}
 
 interface ForgotPasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onResetPassword: (data: { password: string; confirmPassword: string }) => void;
     email: string;
-    loading?: boolean;
-    error?: string | null;
+    token?: string; // Token từ verification step
+    toast: ToastHook;
 }
 
 interface ResetPasswordForm {
@@ -21,13 +26,37 @@ interface ResetPasswordForm {
 const ForgotPasswordModal = ({
     isOpen,
     onClose,
-    onResetPassword,
     email,
-    loading = false,
-    error = null
+    token,
+    toast
 }: ForgotPasswordModalProps) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<ResetPasswordForm>();
-    const [showRequirements, setShowRequirements] = useState(false);
+    const [showRequirements, setShowRequirements] = useState(false); const onResetPassword = async (data: { password: string; confirmPassword: string }) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Sử dụng token nếu có, fallback về email
+            if (token) {
+                await authApi.resetPassword(token, data.password);
+            } else {
+                // Fallback cho trường hợp không có token (cần thêm method resetPasswordWithEmail)
+                await authApi.resetPassword(email, data.password);
+            }
+
+            onClose();
+            toast.showSuccess('Password Reset Successful', 'Please login with your new password');
+
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to reset password';
+            setError(errorMessage);
+            toast.showError('Password Reset Failed', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
@@ -122,17 +151,17 @@ const ForgotPasswordModal = ({
                                     <div className="flex-1 bg-gray-200 rounded-full h-2">
                                         <div
                                             className={`h-2 rounded-full transition-all duration-300 ${passwordScore <= 2 ? 'bg-red-500' :
-                                                    passwordScore === 3 ? 'bg-yellow-500' :
-                                                        passwordScore === 4 ? 'bg-blue-500' :
-                                                            'bg-green-500'
+                                                passwordScore === 3 ? 'bg-yellow-500' :
+                                                    passwordScore === 4 ? 'bg-blue-500' :
+                                                        'bg-green-500'
                                                 }`}
                                             style={{ width: `${(passwordScore / 5) * 100}%` }}
                                         ></div>
                                     </div>
                                     <span className={`text-xs font-medium ${passwordScore <= 2 ? 'text-red-500' :
-                                            passwordScore === 3 ? 'text-yellow-500' :
-                                                passwordScore === 4 ? 'text-blue-500' :
-                                                    'text-green-500'
+                                        passwordScore === 3 ? 'text-yellow-500' :
+                                            passwordScore === 4 ? 'text-blue-500' :
+                                                'text-green-500'
                                         }`}>
                                         {passwordScore <= 2 ? 'Weak' :
                                             passwordScore === 3 ? 'Fair' :
@@ -240,8 +269,8 @@ const ForgotPasswordModal = ({
                             loadingText="Updating Password..."
                             disabled={!isPasswordValid || !doPasswordsMatch}
                             className={`${(!isPasswordValid || !doPasswordsMatch)
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300'
-                                    : ''
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300'
+                                : ''
                                 }`}
                         >
                             Update Password
