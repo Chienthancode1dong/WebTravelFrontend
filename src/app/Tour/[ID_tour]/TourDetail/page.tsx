@@ -1,30 +1,32 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import banners from '@/../public/banners.jsx';
 import {Button} from '@/conponents/Button';
 import StarRating from '@/conponents/StarRating';
 import {Clock,UsersRound,Bus } from 'lucide-react'
+import authApi from '@/lib/auth-api';
+import { useParams } from 'next/navigation';
 
 const Page = () => {
   const [selectedIndex, setSelectedIndex] = useState(0); // state để lưu ảnh đang chọn
+  const [postTours, setPostTour] = useState<any>({}); // state để lưu dữ liệu tour 
+  const params = useParams();
+  const id = params.ID_tour;
 
-  // danh sách ảnh của banner đầu tiên
-const images: string[] = Array.isArray(banners[0].src)
-  ? banners[0].src
-  : [banners[0].src];
-
-// Dữ liệu mẫu cho lịch trình tour
-const availableTours = [
-  { date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
-  { date: '2025-07-15', seats: 8, price: '5,200,000 VND' },
-  { date: '2025-08-01', seats: 12, price: '5,500,000 VND' },
-  { date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
-
-];
-
-
-
+useEffect (() => {
+    try {
+      const fetchData = async () => {
+        console.log('Fetching tour data for ID:', id);
+        const res = await authApi.getTourById(String(id));
+        console.log('Tour data:', res.data.pourTour);
+        setPostTour(res.data.pourTour);
+      };
+      fetchData();
+    } catch (error) {
+      console.error('Error fetching tours:', error);
+    }
+}, []);
   return (
     <div className="w-full min-h-screen z-0 ">
       
@@ -34,8 +36,8 @@ const availableTours = [
       <div className='mt-[30px] w-full  grid 2xl:grid-cols-[120px_1fr_120px]  xl:grid-cols-[60px_1fr_60px]  grid-cols-[50px_1fr_50px]'>
       
           <div className='col-start-2 flex flex-col '>
-                  <h3 className=" text-[38px] font-playfair">{banners[0].name}</h3>
-                  <p className="text-[20px]">{banners[0].location}</p>
+                  <h3 className=" text-[38px] font-playfair">{postTours.destination}</h3>
+                  <p className="text-[20px]">{postTours.city}</p>
                   <StarRating rating={4.5} readonly />
 
                 </div>
@@ -45,21 +47,24 @@ const availableTours = [
       
           {/* Ảnh lớn */}
           <div className='2xl:w-[1050px] 2xl:h-900px] w-[1000px] h-[500px]   '>
+            {Array.isArray(postTours.image) && postTours.image.length > 0 && (
             <Image
-              src={images[selectedIndex]}
+              src={`http://localhost:8080${postTours.image[selectedIndex]}`}
               alt={`Main Image`}
               width={450}
               height={600}
               className="w-full h-full object-cover rounded-[26px] shadow-xl/30"
             />
+            )}
           </div>
 
           {/* Ảnh nhỏ */}
-          <div className='w-[400px] h-[600px] flex flex-col gap-3 px-3  '>
-            {images.map((img, i) => (
+          <div className='w-[400px] h-[600px] flex flex-col gap-3 px-3'>
+          {Array.isArray(postTours.image) &&
+            postTours.image.map((img: string, i: number) => (
               <Image
                 key={i}
-                src={img}
+                src={`http://localhost:8080${img}`}
                 alt={`Thumbnail ${i + 1}`}
                 width={320}
                 height={120}
@@ -81,11 +86,11 @@ const availableTours = [
            <div className='col-start-2 w-full h-full py-5 flex'>
              <div className='w-full  rounded-[26px]  px-5  flex flex-col select-none p-3 bg-[var(--color-2)]/30'>
                <h2 className='text-[30px] mb-4'>Itinerary</h2>
-               {Array.isArray(banners[0].lichtrinh) ? (
-                 banners[0].lichtrinh.map((item, index) => (
+               {Array.isArray(postTours.scheduleDetail) ? (
+                 postTours.scheduleDetail.map((item: { title: string; description: string }, index: number) => (
                    <div key={index} className='mb-4'>
                      <h3 className='text-[24px] font-semibold'>{item.title}</h3>
-                     <p className='text-[16px] mt-2'>{item.content}</p>
+                     <p className='text-[16px] mt-2'>{item.description}</p>
                    </div>
                  ))
                ) : (
@@ -100,21 +105,21 @@ const availableTours = [
               
                 <div className='flex flex-col mt-5'>
                   <h2 className='text-[30px]'>Description</h2>
-                  <p className="text-[16px] my-5 ">{banners[0].description}</p>
+                  <p className="text-[16px] my-5 ">{postTours.description}</p>
                   <div className='w-full flex gap-5'>
                     <span className=' flex gap-1'>
                      <Clock  size={24} />
                      <span className=" text-[20px] "> 
-                      Duration: {banners[0].duration}</span>
+                      Duration: {postTours.duration}</span>
                     </span>
                    <span className=' flex gap-1'>
                      <UsersRound  size={24} />
-                     <span className=" text-[20px]  ">People: {banners[0].numberOfPeople}</span>
+                     <span className=" text-[20px]  ">People: {postTours.numberOfPeople}</span>
                    </span>
 
                    <span className=' flex gap-1'>
                       <Bus size={24}/>
-                       <span className=" text-[20px]  ">Transportation: {banners[0].transportation}</span>
+                       <span className=" text-[20px]  ">Transportation: {postTours.transportation}</span>
                    </span>
                   </div>
                
@@ -140,10 +145,10 @@ const availableTours = [
                         </tr>
                       </thead>
                       <tbody>
-                        {availableTours.map((tour, idx) => (
+                        {(Array.isArray(postTours.scheduleTour) ? postTours.scheduleTour : []).map((tour: { startDate: string; limitQuantity: number; price: number }, idx: number) => (
                           <tr key={idx} className="border-t">
-                            <td className="py-2 px-4">{tour.date}</td>
-                            <td className="py-2 px-4">{tour.seats}</td>
+                            <td className="py-2 px-4">{tour.startDate}</td>
+                            <td className="py-2 px-4">{tour.limitQuantity}</td>
                             <td className="py-2 px-4">{tour.price}</td>
                             <td className="py-2 px-4">
                               <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
