@@ -6,8 +6,11 @@
   --foreground: #171717;
   --font-Playfair : 'Playfair Display', serif;
   --font-Rubik: 'Rubik', serif;
+    --color-1: #FF7757;
+  --color-2: #FFD2C7;
+  --color-3: #331811;
+  --color-4: #61291C;
 }
-
 
 
 
@@ -45,4 +48,20 @@ body {
 }
 h1, h2, h3 {
   font-family: 'Playfair Display', serif; /* Dùng font Playfair Display cho tiêu đề */
+}
+@layer utilities {
+  @keyframes fadeDown {
+    0% {
+  
+      transform: translateY(0px);
+    }
+    100% {
+    
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-fadeDown {
+    animation: fadeDown 4s ease-in-out infinite alternate;
+  }
 }
