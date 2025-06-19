@@ -5,7 +5,7 @@ import banners from '@/../public/banners.jsx';
 import {Button} from '@/conponents/Button';
 import StarRating from '@/conponents/StarRating';
 import {Clock,UsersRound,Bus } from 'lucide-react'
-
+import Link from 'next/link';
 const Page = () => {
   const [selectedIndex, setSelectedIndex] = useState(0); // state để lưu ảnh đang chọn
 
@@ -16,10 +16,10 @@ const images: string[] = Array.isArray(banners[0].src)
 
 // Dữ liệu mẫu cho lịch trình tour
 const availableTours = [
-  { date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
-  { date: '2025-07-15', seats: 8, price: '5,200,000 VND' },
-  { date: '2025-08-01', seats: 12, price: '5,500,000 VND' },
-  { date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
+  { id: "1",date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
+  { id: "2",date: '2025-07-15', seats: 8, price: '5,200,000 VND' },
+  { id: "3",date: '2025-08-01', seats: 12, price: '5,500,000 VND' },
+  { id: "4",date: '2025-07-01', seats: 10, price: '5,000,000 VND' },
 
 ];
 
@@ -146,8 +146,12 @@ const availableTours = [
                             <td className="py-2 px-4">{tour.seats}</td>
                             <td className="py-2 px-4">{tour.price}</td>
                             <td className="py-2 px-4">
-                              <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
+                              <Link href={`/Tour//${tour.id}`} className="inline-block">
+                                  <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
+                              </Link>
                             </td>
+                              
+                              
                           </tr>
                         ))}
                       </tbody>

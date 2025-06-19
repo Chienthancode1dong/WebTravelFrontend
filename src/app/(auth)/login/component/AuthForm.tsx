@@ -154,81 +154,9 @@ const AuthForm = ({ toast }: AuthFormProps = {}) => {
     };
 
     return (
-        <div className="w-full md:w-1/2 p-8 space-y-6">
-            <AuthHeader
-                title={isLogin ? 'Journey Begins' : 'Join the Adventure'}
-                description={isLogin ? 'Log In with Open account' : 'Create your travel account'}
-            />
-
-            <AuthTabs isLogin={isLogin} onToggle={toggleView} />
-
+        
             <SocialLoginButtons />
-            <div className="relative overflow-hidden h-[320px]">
-                <div className={`transition-transform duration-500 ease-in-out absolute w-full 
-                    ${isLogin ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <LoginForm
-                        onForgotPassword={onForgotPasswordClick}
-                        onVerificationEmail={onVerificationEmail}
-                        toast={safeToast}
-                    />
-                </div>
 
-                <div className={`transition-transform duration-500 ease-in-out absolute w-full ${!isLogin ? 'translate-x-0' : 'translate-x-full'}`}>
-                    <SignupForm
-                        onRegistrationSuccess={onRegistrationSuccess}
-                        toast={safeToast}
-                    />
-                </div>
-            </div>            <EmailVerificationModal
-                isOpen={showVerificationModal}
-                onClose={() => setShowVerificationModal(false)}
-                onSuccess={() => {
-                    setShowVerificationModal(false);
-
-                    if (isLogin) {
-                        // Nếu đang ở login flow, thông báo thành công và redirect
-                        safeToast.showSuccess('Email Verified Successfully', 'Please login again to continue');
-                        // Có thể tự động login lại hoặc để user login manual
-                        router.push('/');
-                    } else {
-                        // Nếu đang ở signup flow, chuyển về login
-                        setIsLogin(true);
-                        safeToast.showSuccess('Registration Complete', 'Your account has been verified! Please login to continue');
-                        toggleView('login');
-                    }
-                }}
-                email={registrationEmail}
-                type={isLogin ? 'login' : 'signup'}
-                toast={safeToast}
-            />
-
-            {/* Forgot Password Email Input Modal */}
-            <FPInputEmailModal
-                isOpen={showForgotPasswordEmailModal}
-                onClose={() => setShowForgotPasswordEmailModal(false)}
-                onVerificationEmail={onForgotPasswordEmailSent}
-                toast={safeToast}
-            />
-
-            {/* Forgot Password Verification Modal - Sử dụng EmailVerificationModal */}
-            <EmailVerificationModal
-                isOpen={showForgotPasswordVerificationModal}
-                onClose={() => setShowForgotPasswordVerificationModal(false)}
-                onSuccess={onForgotPasswordVerified}
-                email={forgotPasswordEmail}
-                type="forgot-password"
-                toast={safeToast}
-            />
-
-            {/* Forgot Password Reset Modal */}
-            <ForgotPasswordModal
-                isOpen={showForgotPasswordModal}
-                onClose={() => setShowForgotPasswordModal(false)}
-                email={forgotPasswordEmail}
-                token={forgotPasswordToken}
-                toast={safeToast}
-            />
-        </div>
     );
 }
 
