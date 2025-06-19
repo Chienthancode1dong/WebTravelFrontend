@@ -1,11 +1,12 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Banners from '../../../../public/banners'
 
 import StarRating from '@/conponents/StarRating';
+import authApi from '@/lib/auth-api'
 
 const CheckBox = ({ label, selected = false, onChange = () => { } }: { label: string; selected?: boolean; onChange?: (checked: boolean, label: string) => void }) => {
     return (
@@ -25,6 +26,20 @@ const RadioButton = ({ label, selected = false, onChange = () => { } }: { label:
     )
 }
 const AllTour = () => {
+const [Banners, setBanner] = useState<any[]>([]);
+useEffect (() => {
+    try {
+      const fetchData = async () => {
+        const res = await authApi.getAllTours();
+        console.log('Tour data:', res.data.postTours);
+        setBanner(res.data.postTours);
+      };
+      fetchData();
+    } catch (error) {
+      console.error('Error fetching tours:', error);
+    }
+}, []);
+
   const [openFilters, setOpenFilters] = useState(false)
      const roomTypes = [
          "Phòng đơn",
@@ -56,12 +71,12 @@ const AllTour = () => {
                     
                      <div key={banner.id || banner.name} className='xl:w-[1000px] w-[900px]  flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0'>
                          <Link href={`/Tour/${banner.id}/TourDetail`} scroll={false} className='md:w-1/2'>
-                           <Image src={Array.isArray(banner.src) ? banner.src[0] : banner.src} alt="hotel-img" title='Chi tiết phòng' className='max-h-65 w-full rounded-xl shadow-lg object-cover cursor-pointer' width={400} height={260} />
+                           <Image src={`http://localhost:8080${banner.image[0]}`} alt="hotel-img" title='Chi tiết phòng' className='max-h-65 w-full rounded-xl shadow-lg object-cover cursor-pointer' width={400} height={260} />
                          </Link>
                          <div className='md:w-1/2 flex flex-col gap-2'>
-                             <p className='text-gray-500'>{banner.location}</p>
+                             <p className='text-gray-500'>{banner.city}</p>
                              <Link href={`/Tour/${banner.id}/TourDetail`} scroll={false} className='text-gray-800 text-3xl font-playfair cursor-pointer'>
-                               {banner.name}
+                               {banner.destination}
                              </Link>
                              <div className='flex items-center'>
                                   <StarRating rating={4.5} readonly />
@@ -72,7 +87,6 @@ const AllTour = () => {
                                 
                              </div>
                              {/* Giá phòng */}
-                             <p className='text-xl font-medium text-gray-700'>{banner.price}</p>
                          </div>
                      </div>
                  ))}

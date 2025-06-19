@@ -91,6 +91,15 @@ export const authApi = {
         const response = await apiClient.post(ENDPOINTS.CREATEHOTEL, data,{headers: {'Content-Type': 'multipart/form-data'}});
         return response.data;
     },
+
+    async getAllTours() {
+        const response = await apiClient.get(ENDPOINTS.GETTOURS);
+        return response.data;
+    },
+    async getTourById(id: string) {
+        const response = await apiClient.get(`${ENDPOINTS.GETTOURS}/${id}`);
+        return response.data;
+    }
 };
 
 export default authApi;
