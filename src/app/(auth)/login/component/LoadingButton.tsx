@@ -22,7 +22,7 @@ const LoadingButton = ({
             type={type}
             disabled={loading || disabled}
             onClick={onClick}
-            className={`w-full py-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors ${className}`}
+            className={`w-full py-2.5 bg-black text-white rounded-2xl hover:bg-gray-800 transition-colors ${className}`}
         >
             {loading ? (
                 <span className="flex items-center justify-center">
