@@ -49,7 +49,7 @@ const AdminPage = () => {
                 <button onClick={() => setAdminHotelTab('list')} className={adminHotelTab === 'list' ? 'font-bold underline' : ''}>Hotel List</button>
               </nav>
               {adminHotelTab === 'dashboard' && <AdminHotelDashboard />}
-              {adminHotelTab === 'add' && <AdminHotelAdd />}
+              {adminHotelTab === 'add' && <AdminHotelAdd onSuccess={() => setAdminHotelTab('list')} />}
               {adminHotelTab === 'list' && <AdminHotelList />}
             </div>
           )}

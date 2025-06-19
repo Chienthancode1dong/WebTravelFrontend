@@ -1,3 +1,4 @@
+import { Hotel } from 'lucide-react';
 import apiClient from '@/lib/api-client';
 import { ENDPOINTS } from '@/lib/api-config';
 
@@ -87,8 +88,14 @@ export const authApi = {
     },
 
     // Create Hotel
-    async createHotel(data: any) {
-        const response = await apiClient.post(ENDPOINTS.CREATEHOTEL, data,{headers: {'Content-Type': 'multipart/form-data'}});
+    async createRoom(data: any, hotelId: string) {
+        const response = await apiClient.post(ENDPOINTS.HOTEL(hotelId), data,{headers: {'Content-Type': 'multipart/form-data'}});
+        return response.data;
+    },
+
+    //get all hotel
+    async getAllRooms(hotelId: string) {
+        const response = await apiClient.get(ENDPOINTS.HOTEL(hotelId));
         return response.data;
     },
 
