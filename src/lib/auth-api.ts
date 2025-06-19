@@ -76,6 +76,12 @@ export const authApi = {
         const response = await apiClient.post(ENDPOINTS.LOGIN_FACEBOOK, data);
         return response.data;
     },
+
+    // Create Hotel
+    async createHotel(data: any) {
+        const response = await apiClient.post(ENDPOINTS.CREATEHOTEL, data,{headers: {'Content-Type': 'multipart/form-data'}});
+        return response.data;
+    },
 };
 
 export default authApi;
