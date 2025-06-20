@@ -118,6 +118,17 @@ export const authApi = {
     async getTourById(id: string) {
         const response = await apiClient.get(`${ENDPOINTS.GETTOURS}/${id}`);
         return response.data;
+    },
+
+    //user Feedback
+    async createFeedback(data:any){
+        const response = await apiClient.post(ENDPOINTS.FEEDBACK,data)
+        return response.data
+    },
+    //get All Feedback
+    async getAllFeedback (){
+         const response = await apiClient.get(ENDPOINTS.FEEDBACK)
+        return response.data
     }
 };
 
