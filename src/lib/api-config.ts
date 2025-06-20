@@ -16,6 +16,8 @@ export const ENDPOINTS = {
   LOGIN_FACEBOOK: '/auth/facebook',
   GETTOURS: 'postTour',
   HOTEL:(hotelId:string) =>`rooms/${hotelId}`,
+  DELETEHOTEL:(hotelId:string,roomId:string) => `rooms/${hotelId}?room_id=${roomId}`,
+  STATUSHOTEL:(roomId:string)=> `rooms/status/${roomId}`,
 };
 
 export default { API_BASE_URL, ENDPOINTS };

@@ -98,6 +98,18 @@ export const authApi = {
         const response = await apiClient.get(ENDPOINTS.HOTEL(hotelId));
         return response.data;
     },
+    //delete room
+    async deleteRoom(hotelId: string,roomId: string ){
+        console.log('Delete Room', roomId, hotelId);
+        const response = await apiClient.delete(`${ENDPOINTS.DELETEHOTEL(hotelId,roomId )}`);
+        return response.data;
+    },
+
+    //exdit status hotel
+    async UpdateStatusHotel(roomId: string) {
+        const response = await apiClient.patch(ENDPOINTS.STATUSHOTEL(roomId));
+        return response.data;
+    },
 
     async getAllTours() {
         const response = await apiClient.get(ENDPOINTS.GETTOURS);
