@@ -1,10 +1,10 @@
 'use client'
-import React from 'react'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { assets, facilityIcons, roomCommonData, roomsDummyData } from '../../../../public/assets/assets'
 import StartRating from '../../../components/StartRating'
 import Image, { StaticImageData } from 'next/image'
+import Link from 'next/link'
 import authApi from '@/lib/auth-api'
 
 // Type definitions for room and hotel
@@ -48,10 +48,16 @@ interface RoomType {
 const RoomDetails = () => {
     const params = useParams() as { id?: string };
     const id = params.id;
+    const router = useRouter();
     const roomId = params.id;
     console.log("Room ID:", id); // Kiểm tra xem id có được lấy đúng không
     const [room, setRoom] = useState<RoomType | null>(null);
     const [mainImage, setMainImage] = useState<string | StaticImageData>("");
+    const [formData, setFormData] = useState({
+      checkInDate: '',
+      checkOutDate: '',
+      guest: ''
+    });
 
     const getRoomById = async()=>{
         try {
@@ -82,6 +88,16 @@ const RoomDetails = () => {
         //     setMainImage(foundRoom.images[0]);
         // }
     }, [id]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { id, value } = e.target;
+      setFormData(prev => ({ ...prev, [id === 'Guest' ? 'guest' : id]: value }));
+    };
+  
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+     console.log(JSON.stringify(formData, null, 2)); // Thay console.log bằng alert để dễ kiểm tra
+     router.push(`/hotel/${id}/Booking`); // Thay đường dẫn này bằng trang bạn muốn chuyển đến
+    };
     if (!room) return null;
     return (
         <div className='py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32'>
@@ -128,26 +144,32 @@ const RoomDetails = () => {
                 <p className='text-2xl font-medium'>{room.pricePerNight}.000 VND/đêm</p>
             </div>
             {/*check in/out  */}
-            <form className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] rounded-xl p-6 mt-16 mx-auto max-w-6xl'>
-                <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
-                    <div className='flex flex-col'>
-                        <label htmlFor="checkInDate" className='font-medium'>Ngày Vào</label>
-                        <input type="date" id='checkInDate' placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required />
-                    </div>
-                    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
-                    <div className='flex flex-col'>
-                        <label htmlFor="checkOutDate" className='font-medium'>Ngày Ra</label>
-                        <input type="date" id='checkOutDate' placeholder='Check-Out' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required />
-                    </div>
-                    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
-                    <div className='flex flex-col'>
-                        <label htmlFor="Guest" className='font-medium'>Số Lượng</label>
-                        <input type="number" id='Guest' placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required />
-                    </div>
+            <form
+              className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] rounded-xl p-6 mt-16 mx-auto max-w-6xl'
+              onSubmit={handleSubmit}
+            
+            >
+              <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
+                <div className='flex flex-col'>
+                  <label htmlFor="checkInDate" className='font-medium'>Ngày Vào</label>
+                  <input type="date" id='checkInDate' placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required value={formData.checkInDate} onChange={handleChange} />
                 </div>
-                <button type='submit' className='bg-[var(--color-1)] hover:bg-[var(--color-2)]/50 active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer hover:text-gray-700 '>
-                    Đặt ngay
-                </button>
+                <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
+                <div className='flex flex-col'>
+                  <label htmlFor="checkOutDate" className='font-medium'>Ngày Ra</label>
+                  <input type="date" id='checkOutDate' placeholder='Check-Out' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required value={formData.checkOutDate} onChange={handleChange} />
+                </div>
+                <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
+                <div className='flex flex-col'>
+                  <label htmlFor="Guest" className='font-medium'>Số Lượng</label>
+                  <input type="number" id='Guest' placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required value={formData.guest} onChange={handleChange} />
+                </div>
+              </div>
+            <button type='submit' className='bg-[var(--color-1)] hover:bg-[var(--color-2)]/50 active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer hover:text-gray-700 '>
+                Đặt ngay
+              </button>
+             
+            
             </form>
             {/*thông tin thêm */}
             <div className='mt-25 space-y-4'>

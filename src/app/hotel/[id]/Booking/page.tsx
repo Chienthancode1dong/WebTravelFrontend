@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import Header from '@/conponents/header'
+
 import banners from '../../../../../public/banners'
 import {Button} from '@/conponents/Button'
 const scheduleDetail = {
@@ -10,6 +10,28 @@ const scheduleDetail = {
     slot: 5,
 
   }
+const hotelBookingDetail = {
+  hotel: {
+    name: 'Khách sạn Mặt Trời',
+    address: '123 Đường Biển, Quận 1, TP. HCM',
+    images: [
+      '/images/hotel1.jpg',
+      '/images/hotel2.jpg'
+    ],
+    description: 'Khách sạn 5 sao với view biển tuyệt đẹp, đầy đủ tiện nghi.',
+    rating: 4.7,
+    phone: '0123 456 789',
+    email: 'info@sunhotel.com',
+    checkInTime: '14:00',
+    checkOutTime: '12:00',
+    policies: 'Không hút thuốc, không mang thú cưng.',
+  },
+  room: {
+    pricePerNight: 1200000,
+    maxGuests: 4,
+    amenities: ['Wifi miễn phí', 'Bể bơi', 'Ăn sáng', 'Điều hòa'],
+  }
+};
 const Booking = () => {
   const [numberOfPeople,setnumberOfPeopl]=useState<Number>() // This should be dynamic based on user input
   // Tính tổng chi phí dựa trên giá và số người (dùng state numberOfPeople)
@@ -26,9 +48,23 @@ const maxSlots = scheduleDetail?.slot ?? 0;
          </div>
          <div className='flex  text-[16px] items-center justify-between mt-10 mx-34 md:mx-38 p-10 gap-10 bg-white rounded-lg shadow-lg border border-gray-300'>
               <div className='flex flex-col  gap-2 text-[20px]  px-10 md:px-15 py-5 rounded-lg  border border-gray-300'>
-                <strong>Destination: </strong><span>{banners[0].name}</span>
-               <strong>location:</strong><span> {banners[0].location}</span>
-               <strong>transportation:</strong><span> {banners[0].transportation}</span>
+                {/* Destination/Hotel Info */}
+<div className="mb-6">
+  <h1 className="text-3xl font-bold mb-2">{hotelBookingDetail.hotel.name}</h1>
+  <p className="text-gray-600 mb-2">{hotelBookingDetail.hotel.address}</p>
+  <p className="text-lg font-semibold">Giá mỗi đêm: <span className="text-orange-600">{hotelBookingDetail.room.pricePerNight.toLocaleString()} VND</span></p>
+  <p className="text-sm text-gray-500">Số khách tối đa: {hotelBookingDetail.room.maxGuests}</p>
+  <div className="flex flex-wrap gap-2 mt-2">
+    {hotelBookingDetail.room.amenities.map((item: string, idx: number) => (
+      <span key={idx} className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-700">{item}</span>
+    ))}
+  </div>
+  <p className="mt-4 text-gray-700">{hotelBookingDetail.hotel.description}</p>
+  <p className="mt-2 text-yellow-600 font-medium">Đánh giá: {hotelBookingDetail.hotel.rating} ⭐</p>
+  <p className="mt-2 text-gray-500">Liên hệ: {hotelBookingDetail.hotel.phone} | {hotelBookingDetail.hotel.email}</p>
+  <p className="mt-2 text-gray-500">Nhận phòng: {hotelBookingDetail.hotel.checkInTime} - Trả phòng: {hotelBookingDetail.hotel.checkOutTime}</p>
+  <p className="mt-2 text-gray-500">Chính sách: {hotelBookingDetail.hotel.policies}</p>
+</div>
               <strong>Duration:</strong><span>{scheduleDetail.dayStart} to {scheduleDetail.dayEnd}</span>
               <strong>Price:</strong><span> {scheduleDetail.price} USD</span>
               </div>
