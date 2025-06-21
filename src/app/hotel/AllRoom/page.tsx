@@ -1,9 +1,25 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { assets, facilityIcons, roomsDummyData } from '../../../../public/assets/assets'
 import StartRating from '../../../components/StartRating'
-import Image from 'next/image'
+import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
+import authApi from '@/lib/auth-api'
+
+interface RoomType {
+  id: string;
+  hotelId: {
+    name:string,
+    address:string
+  };
+  type_room: string;
+  price: number;
+  image: (string | StaticImageData)[];
+  status: boolean;
+  description: string;
+  area: string;
+}
+
 
 const CheckBox = ({ label, selected = false, onChange = () => { } }: { label: string; selected?: boolean; onChange?: (checked: boolean, label: string) => void }) => {
     return (
@@ -25,6 +41,7 @@ const RadioButton = ({ label, selected = false, onChange = () => { } }: { label:
 
 const AllRooms = () => {
     const [openFilters, setOpenFilters] = useState(false)
+    const [roomData,setroomData] = useState<RoomType[]>([])
     const roomTypes = [
         "Phòng đơn",
         "Phòng đôi",
@@ -44,6 +61,14 @@ const AllRooms = () => {
         "Giá cao đến thấp",
         "Mới nhất",
     ]
+    const getAllRooms = async()=>{
+        const res = await authApi.getallRoom()
+        console.log(res.data.roomsFromHotel)
+        setroomData(res.data.roomsFromHotel)
+    }
+    useEffect(()=>{
+        getAllRooms()
+    },[])
     return (
         <div className='flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32 '>
             <div>
@@ -51,15 +76,15 @@ const AllRooms = () => {
                     <h1 className=' font-playfair text-4xl md:text-[40px]'>Tất cả phòng</h1>
                     <p className=' text-sm md:text-base text-gray-500/90 mt-2 max-w-174'> Mỗi phòng đều mang lại một vẻ đẹp và sự tiện nghi riêng</p>
                 </div>
-                {roomsDummyData.map((room) => (
-                    <div key={room._id} className='flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0'>
-                        <Link href={`/hotel/${room._id}`} scroll={false} className='md:w-1/2'>
-                          <Image src={typeof room.images[0] === 'string' ? room.images[0] : room.images[0].src} alt="hotel-img" title='Chi tiết phòng' className='max-h-65 w-full rounded-xl shadow-lg object-cover cursor-pointer' width={400} height={260} />
+                {roomData.map((room) => (
+                    <div key={room.id} className='flex flex-col md:flex-row items-start py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0'>
+                        <Link href={`/hotel/${room.id}`} scroll={false} className='md:w-1/2'>
+                          <Image src={typeof room.image[0] === 'string' ? `http://localhost:8080${room.image[0]}` : room.image[0].src} alt="hotel-img" title='Chi tiết phòng' className='max-h-65 w-full rounded-xl shadow-lg object-cover cursor-pointer' width={400} height={260} />
                         </Link>
                         <div className='md:w-1/2 flex flex-col gap-2'>
-                            <p className='text-gray-500'>{room.hotel.city}</p>
-                            <Link href={`/hotel/${room._id}`} scroll={false} className='text-gray-800 text-3xl font-playfair cursor-pointer'>
-                              {room.hotel.name}
+                            <p className='text-gray-500'>{room.hotelId.address}</p>
+                            <Link href={`/hotel/${room.id}`} scroll={false} className='text-gray-800 text-3xl font-playfair cursor-pointer'>
+                              {room.hotelId.name}
                             </Link>
                             <div className='flex items-center'>
                                 <StartRating />
@@ -67,22 +92,9 @@ const AllRooms = () => {
                             </div>
                             <div className='flex items-center gap-1 text-gray-500 text-sm mt-2'>
                                 <Image src={typeof assets.locationIcon === 'string' ? assets.locationIcon : assets.locationIcon.src} alt="loaction-icon" width={20} height={20} />
-                                <span>{room.hotel.address}</span>
+                                <span>{room.hotelId.address}</span>
                             </div>
-                            {/*tiện nghi của các phòng */}
-                            <div className='grid grid-cols-3 gap-4 mt-3 mb-6'>
-                                {room.amenities.map((item, index) => {
-                                    const icon = facilityIcons[item as keyof typeof facilityIcons];
-                                    return (
-                                        <div key={index} className='flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-2)]/50'>
-                                            <Image src={typeof icon === 'string' ? icon : icon.src} alt={item} className='w-5 h-5' width={20} height={20} />
-                                            <p className='text-xs'>{item}</p>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {/* Giá phòng */}
-                            <p className='text-xl font-medium text-gray-700'>{room.pricePerNight}.000 VND/đêm</p>
+                            <p className='text-xl font-medium text-gray-700'>{room.price}.000 VND/đêm</p>
                         </div>
                     </div>
                 ))}

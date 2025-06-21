@@ -18,6 +18,7 @@ type ReviewItemProps = {
 };
 
 export function ReviewItem({ review }: ReviewItemProps) {
+  console.log("review",review.user?.image) 
   return (
     
     <div
@@ -26,7 +27,7 @@ export function ReviewItem({ review }: ReviewItemProps) {
     >
       <div className="w-full h-[30px]"></div>
        <div className="absolute  top-[0px] left-8">
-            <Image src={review.user?.image||"/82297127_2570196056637274_9218216117594488832_n.jpg"} alt="Avatar" width={70} height={70} className="rounded-full mb-2" />
+            <Image src={review.user?.image||"/82297127_2570196056637274_9218216117594488832_n.jpg"} alt="" width={70} height={70} className="rounded-full mb-2" />
             </div>
       <div className=" w-full h-[270px] bg-[#F5F6F7] p-5 rounded-lg shadow-sm flex flex-col  justify-between ">
        

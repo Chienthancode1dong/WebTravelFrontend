@@ -23,6 +23,7 @@ interface PostReview {
   user_id: string;
   comment: string;
   rating: number;
+  image:string;
 }
 
 const Commment = () => {
@@ -31,6 +32,7 @@ const Commment = () => {
   const [totalReviews, setTotalReviews] = useState(123);
   const [userRating, setUserRating] = useState(0);
   const [userComment, setUserComment] = useState('');
+  const [userImage,setUserImage] = useState('')
   const [reviews, setReviews] = useState<Review[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null!);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,6 +66,7 @@ const Commment = () => {
       user_id: '5fc1a8af-508a-4080-8d54-2e94cb22253e',
       rating: userRating,
       comment: userComment,
+      image:userImage,
     };
 
     setAverageRating((prev) => (prev * totalReviews + userRating) / (totalReviews + 1));
@@ -71,6 +74,7 @@ const Commment = () => {
     setIsModalOpen(false);
     setUserRating(0);
     setUserComment('');
+    setUserImage('')
     CreateFeedBackAPI(newReview);
   };
 
@@ -78,7 +82,9 @@ const Commment = () => {
     try {
       const res = await authApi.createFeedback(data);
       if (res.data) {
-        setReviews((prev) => [...prev, res.data]);
+        console.log(res.data,"data")
+        getAllFeedback();
+        
       }
     } catch (error) {
       console.log(error);

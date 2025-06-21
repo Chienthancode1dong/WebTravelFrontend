@@ -129,6 +129,16 @@ export const authApi = {
     async getAllFeedback (){
          const response = await apiClient.get(ENDPOINTS.FEEDBACK)
         return response.data
+    },
+    //get Rooom By Id
+    async getRoomById(roomId:string){
+        const response = await apiClient.get(ENDPOINTS.ROOMBYID(roomId))
+        return response.data
+    },
+    //get aall room
+    async getallRoom (){
+        const response = await apiClient.get(ENDPOINTS.ROOM)
+        return response.data
     }
 };
 

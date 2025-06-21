@@ -19,6 +19,8 @@ export const ENDPOINTS = {
   DELETEHOTEL:(hotelId:string,roomId:string) => `rooms/${hotelId}?room_id=${roomId}`,
   STATUSHOTEL:(roomId:string)=> `rooms/status/${roomId}`,
   FEEDBACK:'/user-comment',
+  ROOMBYID:(roomId:string) =>`rooms/hotel/${roomId}`,
+  ROOM:'rooms',
 };
 
 export default { API_BASE_URL, ENDPOINTS };
