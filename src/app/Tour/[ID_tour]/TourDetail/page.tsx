@@ -7,7 +7,7 @@ import {Clock,UsersRound,Bus } from 'lucide-react'
 import Link from 'next/link';
 import authApi from '@/lib/auth-api';
 import { useParams } from 'next/navigation';
-
+import CommentTour from '@/conponents/commentTour';
 const Page = () => {
   const [selectedIndex, setSelectedIndex] = useState(0); // state để lưu ảnh đang chọn
   const [postTours, setPostTour] = useState<any>({}); // state để lưu dữ liệu tour 
@@ -33,7 +33,7 @@ useEffect (() => {
 
       <div className='w-full h-[70px]'></div>
 
-      <div className='mt-[30px] w-full  grid 2xl:grid-cols-[120px_1fr_120px]  xl:grid-cols-[60px_1fr_60px]  grid-cols-[50px_1fr_50px]'>
+      <div className='mt-[30px] mb-[150px] w-full  grid 2xl:grid-cols-[120px_1fr_120px]  xl:grid-cols-[60px_1fr_60px]  grid-cols-[50px_1fr_50px]'>
       
           <div className='col-start-2 flex flex-col '>
                   <h3 className=" text-[38px] font-playfair">{postTours.destination}</h3>
@@ -151,7 +151,7 @@ useEffect (() => {
                             <td className="py-2 px-4">{tour.limitQuantity}</td>
                             <td className="py-2 px-4">{tour.price}</td>
                             <td className="py-2 px-4">
-                              <Link href={`/Tour//${tour.id}`} className="inline-block">
+                              <Link href={`/Tour/${id}/${idx}`} className="inline-block">
                                   <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
                               </Link>
                             </td>
@@ -166,7 +166,10 @@ useEffect (() => {
                 
                </div>
             </div>
-            
+            {/* comment */}
+            <div className='col-start-2  w-full max-h-[800px] py-5  mb-5'>
+              <CommentTour/>
+            </div>
       </div>
                    
     </div>
