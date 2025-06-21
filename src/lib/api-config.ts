@@ -11,9 +11,15 @@ export const ENDPOINTS = {
   FORGOT_PASSWORD: '/auth/forgot-password',
   VERIFY_FORGOT_PASSWORD: '/auth/verify-forgot-password',
   RESET_PASSWORD: '/auth/reset-password',
+  LOGIN_GOOGLE: '/auth/google',
+  REFRESH_TOKEN: '/auth/refresh',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
   LOGIN_FACEBOOK: '/auth/facebook',
-};
+  LOGIN_TWITTER: '/auth/twitter',
+  HOTELS: '/hotels',
+  BOOKINGS: '/bookings',
+  REVIEWS: '/reviews',
+} 
 
 export default { API_BASE_URL, ENDPOINTS };

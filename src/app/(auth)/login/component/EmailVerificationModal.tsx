@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import authApi from '@/lib/auth-api';
 
 interface EmailVerificationModalProps {
@@ -10,10 +11,6 @@ interface EmailVerificationModalProps {
     type?: 'signup' | 'login' | 'forgot-password';
     title?: string; // Custom title
     description?: string; // Custom description
-    toast?: {
-        showSuccess: (title: string, message?: string) => void;
-        showError: (title: string, message?: string) => void;
-    };
 }
 
 const EmailVerificationModal = ({
@@ -23,20 +20,17 @@ const EmailVerificationModal = ({
     email,
     type = 'signup',
     title = '',
-    description = '',
-    toast
+    description = ''
 }: EmailVerificationModalProps) => {
     const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
     const [countdown, setCountdown] = useState(60);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [isVerified, setIsVerified] = useState(false); // Thêm state cho success
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);    // Reset when modal opens
     useEffect(() => {
         if (isOpen) {
             setOtp(Array(6).fill(''));
             setCountdown(60);
-            setError(null);
             setLoading(false);
             setIsVerified(false); // Reset success state
             setTimeout(() => inputRefs.current[0]?.focus(), 100);
@@ -49,33 +43,26 @@ const EmailVerificationModal = ({
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
             return () => clearTimeout(timer);
         }
-    }, [isOpen, countdown]);    // Verify OTP
+    }, [isOpen, countdown]);
+
+    // Verify OTP
     const handleVerifyOTP = async (otpCode: string) => {
         if (otpCode.length !== 6) return;
 
         try {
             setLoading(true);
-            setError(null);
-
-            // Thêm delay nhỏ để user thấy loading state
             await new Promise(resolve => setTimeout(resolve, 800));
 
             let result = null;
             if (type === 'forgot-password') {
-                // API cho forgot password
                 result = await authApi.verifyForgotPassword(email, otpCode);
-                toast?.showSuccess('Email Verified', 'You can now reset your password');
+                toast.success('Email Verified - You can now reset your password');
             } else {
-                // API cho signup/login
                 await authApi.verifyEmail(email, otpCode);
-                toast?.showSuccess('Email Verified Successfully', 'Your account has been verified');
+                toast.success('Email Verified Successfully - Your account has been verified');
             }
-
-            // Hiển thị success state
             setIsVerified(true);
             await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Success - call parent callback với hoặc không có token
             if (type === 'forgot-password' && result?.token) {
                 onSuccess(result.token);
             } else {
@@ -86,18 +73,18 @@ const EmailVerificationModal = ({
         } catch (error: any) {
             console.error('Verification error:', error.response?.data);
             const errorMessage = error.response?.data?.message || 'Invalid verification code';
-            setError(errorMessage);
-            toast?.showError('Verification Failed', errorMessage);
+            toast.error(`Verification Failed: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
-    };    // Resend OTP
+    };
+
+    // Resend OTP
     const handleResendOTP = async () => {
         if (countdown > 0) return;
 
         try {
             setLoading(true);
-            setError(null);
 
             if (type === 'forgot-password') {
                 // Resend OTP cho forgot password
@@ -108,12 +95,11 @@ const EmailVerificationModal = ({
             }
 
             setCountdown(60);
-            toast?.showSuccess('Code Sent', 'A new verification code has been sent to your email');
+            toast.success('Code Sent - A new verification code has been sent to your email');
 
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Failed to resend verification code';
-            setError(errorMessage);
-            toast?.showError('Failed to resend', errorMessage);
+            toast.error(`Failed to resend: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -203,7 +189,8 @@ const EmailVerificationModal = ({
 
     return (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md relative">                {/* Loading Overlay */}
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md relative">
+                {/* Loading Overlay */}
                 {loading && (
                     <div className="absolute inset-0 bg-white/90 rounded-2xl flex items-center justify-center z-10">
                         <div className="flex flex-col items-center">
@@ -234,7 +221,8 @@ const EmailVerificationModal = ({
                         <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                    </div>                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{content.title}</h2>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{content.title}</h2>
                     <p className="text-gray-600">
                         {content.description}<br />
                         <span className="font-semibold text-gray-900">{email}</span>
@@ -261,29 +249,31 @@ const EmailVerificationModal = ({
                             disabled={loading}
                         />
                     ))}
-                </div>
-
-
-
-                {/* Resend */}
+                </div>                {/* Resend */}
                 <div className="text-center mb-6">
-                    <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
                     {countdown > 0 ? (
-                        <p className="text-sm text-gray-500">Resend in {countdown}s</p>
-                    ) : (<button
-                        onClick={handleResend}
-                        className="text-sm text-blue-600 hover:text-blue-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <>
-                                <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                Sending...
-                            </>
-                        ) : (
-                            'Resend Code'
-                        )}
-                    </button>
+                        <div className="text-sm text-gray-600">
+                            <p className="mb-1">Didn't receive the code?</p>
+                            <p className="text-gray-500">Resend in {countdown}s</p>
+                        </div>
+                    ) : (
+                        <div className="text-sm text-gray-600">
+                            <span className="mr-2">Didn't receive the code?</span>
+                            <button
+                                onClick={handleResend}
+                                className="text-blue-600 hover:text-blue-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                        Sending...
+                                    </>
+                                ) : (
+                                    'Resend Code'
+                                )}
+                            </button>
+                        </div>
                     )}
                 </div>
 

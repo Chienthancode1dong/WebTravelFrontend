@@ -1,21 +1,16 @@
 'use client'
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import authApi from '@/lib/auth-api';
 import PasswordInput from './PasswordInput';
 import LoadingButton from './LoadingButton';
-
-interface ToastHook {
-    showSuccess: (title: string, message?: string) => void;
-    showError: (title: string, message?: string) => void;
-}
 
 interface ForgotPasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
     token?: string; // Token từ verification step
-    toast: ToastHook;
 }
 
 interface ResetPasswordForm {
@@ -27,32 +22,30 @@ const ForgotPasswordModal = ({
     isOpen,
     onClose,
     email,
-    token,
-    toast
+    token
 }: ForgotPasswordModalProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<ResetPasswordForm>();
-    const [showRequirements, setShowRequirements] = useState(false); const onResetPassword = async (data: { password: string; confirmPassword: string }) => {
+    const [showRequirements, setShowRequirements] = useState(false); 
+    const onResetPassword = async (data: { password: string; confirmPassword: string }) => {
         try {
             setLoading(true);
             setError(null);
 
-            // Sử dụng token nếu có, fallback về email
             if (token) {
                 await authApi.resetPassword(token, data.password);
             } else {
-                // Fallback cho trường hợp không có token (cần thêm method resetPasswordWithEmail)
+                toast.warning('')
                 await authApi.resetPassword(email, data.password);
             }
 
             onClose();
-            toast.showSuccess('Password Reset Successful', 'Please login with your new password');
-
+            toast.success('Password Reset Successful - Please login with your new password');
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Failed to reset password';
             setError(errorMessage);
-            toast.showError('Password Reset Failed', errorMessage);
+            toast.error(`Password Reset Failed: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -76,7 +69,7 @@ const ForgotPasswordModal = ({
     };
 
     const passwordScore = getPasswordScore(password || '');
-    const isPasswordValid = passwordScore >= 4;
+    const isPasswordValid = passwordScore >= 3;
     const doPasswordsMatch = password && confirmPassword && password === confirmPassword;
 
     const onSubmit = (data: ResetPasswordForm) => {

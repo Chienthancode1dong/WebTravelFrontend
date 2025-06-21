@@ -1,39 +1,31 @@
 'use client'
 import { useState } from 'react';
 import { useForm } from "react-hook-form";
+import { toast } from 'react-toastify';
 import authApi from '@/lib/auth-api';
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import LoadingButton from "./LoadingButton";
 
-interface ToastHook {
-    showSuccess: (title: string, message?: string) => void;
-    showError: (title: string, message?: string) => void;
-}
-
 interface SignupFormProps {
     onRegistrationSuccess: (email: string) => void;
-    toast: ToastHook;
 }
 
-const SignupForm = ({ onRegistrationSuccess, toast }: SignupFormProps) => {
+const SignupForm = ({ onRegistrationSuccess }: SignupFormProps) => {
     const [loading, setLoading] = useState(false);
-    const { register, handleSubmit } = useForm();
-
-    const onSignupSubmit = async (data: any) => {
+    const { register, handleSubmit, reset } = useForm(); const onSignupSubmit = async (data: any) => {
         try {
             setLoading(true);
-
-            // Call signup API
             const response = await authApi.register(data.fullName, data.email, data.password);
-
-            // Show verification modal after successful registration
+            if (!response) {
+                throw new Error(response?.message || 'Registration failed');
+            }
+            reset();
             onRegistrationSuccess(data.email);
-            toast.showSuccess('Registration Successful', 'Please check your email for verification code');
-
+            toast.success('Registration Successful - Please check your email for verification code');
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
-            toast.showError('Registration Failed', errorMessage);
+            const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+            toast.error(`Registration Failed: ${errorMessage}`);
         } finally {
             setLoading(false);
         }

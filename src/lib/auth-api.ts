@@ -63,8 +63,8 @@ export const authApi = {
             password
         });
         return response.data;
-    },
-
+    },  
+    
     // Logout
     async logout() {
         const response = await apiClient.post(ENDPOINTS.LOGOUT);
@@ -85,6 +85,10 @@ export const authApi = {
         const response = await apiClient.post(ENDPOINTS.LOGIN_FACEBOOK, data);
         return response.data;
     },
+
+
+
+
 };
 
 export default authApi;
