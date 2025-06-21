@@ -6,9 +6,10 @@ import Image from 'next/image'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import authApi from '@/lib/auth-api'
+import { Hotel } from 'lucide-react'
 
-
-const AddRoom = () => {
+const hotelId = 'e7a67236-faa1-49c2-9a3e-930793baa694';
+const AddRoom = ({ onSuccess }: { onSuccess: () => void }) => {
   const router = useRouter();
   const [images, setImages] = useState<{ [key: number]: File | null }>({
       1: null,
@@ -20,16 +21,16 @@ const AddRoom = () => {
     type_room: '',
     price: '',
     description: '',
-    phone_number: '',
-    address: '',
-    name: ''
+    area: '',
+    name: '',
+    hotelId: hotelId
   })
   
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault(); 
     // Xử lý logic thêm phòng ở đây
     console.log('Thêm phòng với dữ liệu:', inputs, images);
-    if (!inputs.name || !inputs.phone_number || !inputs.address || !inputs.type_room || !inputs.price) {
+    if (!inputs.name || !inputs.area || !inputs.type_room || !inputs.price) {
       toast.error('Vui lòng điền đầy đủ thông tin phòng');
       return;
     }
@@ -40,11 +41,13 @@ const AddRoom = () => {
     try {
       const formData = new FormData();
       formData.append('name', inputs.name);
-      formData.append('phone_number', inputs.phone_number);
-      formData.append('address', inputs.address);
+      formData.append('area', inputs.area);
       formData.append('type_room', inputs.type_room);
       formData.append('price', inputs.price);
       formData.append('description', inputs.description);
+      formData.append('hotelId', inputs.hotelId);
+
+          // Append images to FormData
 
       Object.entries(images).forEach(([key, file]) => {
             if (file) {
@@ -52,10 +55,11 @@ const AddRoom = () => {
             }
           });
 
-      const response = await authApi.createHotel(formData);
+      const response = await authApi.createRoom(formData,hotelId);
       console.log('Response:', response);
       if (response.data.success) {
         toast.success('Thêm phòng thành công');
+        onSuccess()
       } else {
         toast.error(response.data.message || 'Thêm phòng thất bại');
       }
@@ -75,12 +79,8 @@ const AddRoom = () => {
           <input type="text" placeholder='Nhập tên phòng' className='border border-gray-300 mt-1 rounded p-2 w-full ' value={inputs.name} onChange={e => setInputs({ ...inputs, name: e.target.value })} />
         </div>
         <div className='flex-1 '>
-          <p className='text-gray-800 mt-4'>Số Điện Thoại</p>
-          <input type="text" placeholder='Nhập số điện thoại' className='border border-gray-300 mt-1 rounded p-2 w-full ' value={inputs.phone_number} onChange={e => setInputs({ ...inputs, phone_number: e.target.value })} />
-        </div>
-        <div className='flex-1 '>
-          <p className='text-gray-800 mt-4'>Địa Chỉ</p>
-          <input type="text" placeholder='Nhập địa chỉ' className='border border-gray-300 mt-1 rounded p-2 w-full ' value={inputs.address} onChange={e => setInputs({ ...inputs, address: e.target.value })} />
+          <p className='text-gray-800 mt-4'>diện tích (m2)</p>
+          <input type="text" placeholder='Nhập diện tích phòng' className='border border-gray-300 mt-1 rounded p-2 w-full ' value={inputs.area} onChange={e => setInputs({ ...inputs, area: e.target.value })} />
         </div>
       </div>
       {/*thêm ảnh */}

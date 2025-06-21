@@ -1,3 +1,4 @@
+import { Hotel } from 'lucide-react';
 import apiClient from '@/lib/api-client';
 import { ENDPOINTS } from '@/lib/api-config';
 
@@ -87,8 +88,26 @@ export const authApi = {
     },
 
     // Create Hotel
-    async createHotel(data: any) {
-        const response = await apiClient.post(ENDPOINTS.CREATEHOTEL, data,{headers: {'Content-Type': 'multipart/form-data'}});
+    async createRoom(data: any, hotelId: string) {
+        const response = await apiClient.post(ENDPOINTS.HOTEL(hotelId), data,{headers: {'Content-Type': 'multipart/form-data'}});
+        return response.data;
+    },
+
+    //get all hotel
+    async getAllRooms(hotelId: string) {
+        const response = await apiClient.get(ENDPOINTS.HOTEL(hotelId));
+        return response.data;
+    },
+    //delete room
+    async deleteRoom(hotelId: string,roomId: string ){
+        console.log('Delete Room', roomId, hotelId);
+        const response = await apiClient.delete(`${ENDPOINTS.DELETEHOTEL(hotelId,roomId )}`);
+        return response.data;
+    },
+
+    //exdit status hotel
+    async UpdateStatusHotel(roomId: string) {
+        const response = await apiClient.patch(ENDPOINTS.STATUSHOTEL(roomId));
         return response.data;
     },
 
@@ -99,6 +118,17 @@ export const authApi = {
     async getTourById(id: string) {
         const response = await apiClient.get(`${ENDPOINTS.GETTOURS}/${id}`);
         return response.data;
+    },
+
+    //user Feedback
+    async createFeedback(data:any){
+        const response = await apiClient.post(ENDPOINTS.FEEDBACK,data)
+        return response.data
+    },
+    //get All Feedback
+    async getAllFeedback (){
+         const response = await apiClient.get(ENDPOINTS.FEEDBACK)
+        return response.data
     }
 };
 
