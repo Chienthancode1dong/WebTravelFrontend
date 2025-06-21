@@ -1,10 +1,10 @@
 'use client'
 
 import Title from '@/components/Title'
-import { assets} from '../../../../public/assets/assets'
+import { assets} from '../../../../../public/assets/assets'
 import Image from 'next/image'
 import { useState } from 'react'
-import { userBookingsDummyData } from '../../../../public/assets/assets'
+import { userBookingsDummyData } from '../../../../../public/assets/assets'
 const MyBookings = () => {
 
    const [bookings, setBookings] = useState(userBookingsDummyData)

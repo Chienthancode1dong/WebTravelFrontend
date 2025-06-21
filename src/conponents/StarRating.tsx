@@ -3,20 +3,20 @@ import React, {  useState } from 'react'
 import { Star } from 'lucide-react'
 
 type StarRatingProps = {
-  rating: number            // Giá trị hiển thị sao (có thể là giá trị trung bình)
+  star: number            // Giá trị hiển thị sao (có thể là giá trị trung bình)
   readonly?: boolean        // true = chỉ hiển thị, false = cho người dùng đánh giá
   maxStars?: number         // số sao tối đa
   onRate?: (rating: number) => void // callback khi người dùng chọn sao
 }
 
 const StarRating: React.FC<StarRatingProps> = ({
-  rating,
+  star,
   readonly = false,
   maxStars = 5,
   onRate,
 }) => {
   const [hovered, setHovered] = useState<number | null>(null)
-const [selected, setSelected] = useState<number>(rating || 0)
+const [selected, setSelected] = useState<number>(star || 0)
 
 
   const displayRating = hovered !== null ? hovered : selected

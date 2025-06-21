@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
     ],
+     domains: [
+      'scontent.fsgn2-8.fna.fbcdn.net', 
+      'scontent.xx.fbcdn.net' 
+    ],
   },
 };
 

@@ -17,6 +17,11 @@ export const ENDPOINTS = {
   CREATEHOTEL:'hotel',
   TOUR: 'postTour',
   SCHEDULE:'scheduleTour',
+  GETTOURS: 'postTour',
+  HOTEL:(hotelId:string) =>`rooms/${hotelId}`,
+  DELETEHOTEL:(hotelId:string,roomId:string) => `rooms/${hotelId}?room_id=${roomId}`,
+  STATUSHOTEL:(roomId:string)=> `rooms/status/${roomId}`,
+  FEEDBACK:'/user-comment',
 };
 
 export default { API_BASE_URL, ENDPOINTS };

@@ -1,11 +1,11 @@
 "use client";
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import Header from '@/conponents/header';
 
 export default function HotelLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Navbar />
+      <Header opacity=''/>
       {children}
       <Footer />
     </>
