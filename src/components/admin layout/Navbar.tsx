@@ -1,12 +1,13 @@
 import React from 'react'
+import Image from 'next/image'
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false)
     return (
         <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-500 bg-white relative transition-all">
 
-            <a href="/admin">
-                <img className="h-9" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/dummyLogo/dummyLogoColored.svg" alt="dummyLogoColored" />
+            <a href="/admin" title="Trang quản trị" aria-label="Trang quản trị">
+                <Image className="h-9" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/dummyLogo/dummyLogoColored.svg" alt="dummyLogoColored" width={120} height={36} />
             </a>
 
             {/* Desktop Menu */}

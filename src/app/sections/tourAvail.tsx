@@ -5,7 +5,7 @@ import NextPrevButton from "@/conponents/NextPrevButton";
 import BannerImg from "@/conponents/bannerImg";
 import banners from '@/../public/banners';
 import { useInView } from '@/hook/useInView';
-
+import Link from "next/link";
 const TourAvail = () => {
     const scrollRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -53,6 +53,12 @@ const TourAvail = () => {
                   isIntersecting ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
                 }`}>
            <BannerImg  scrollRef={scrollRef} />
+           <div className='absolute bottom-0 text-[20px] decoration-inherit underline right-10 italic gap-4 p-4'>
+              <Link href={`/Tour/AllTour`} className=''>
+                   <span >More options </span>
+              </Link>
+           </div>
+          
           </div>
     </div>
   )

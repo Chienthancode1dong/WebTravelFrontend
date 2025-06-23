@@ -34,10 +34,10 @@ const SocialLoginButtons = () => {
 
                 if (!credentialResponse.credential) {
                     throw new Error('No credential received from Google One Tap');
-                } const result = await googleAuthApi.loginWithGoogle(credentialResponse.credential);                if (result.success && result.data?.data?.user) {
+                } const result = await googleAuthApi.loginWithGoogle(credentialResponse.credential); if (result.success && result.data?.data?.user) {
                     const user = result.data.data.user;
                     localStorage.setItem('userId', user.id);
-                    localStorage.setItem('email', user.name);
+                    localStorage.setItem('name', user.name);
                     localStorage.setItem('role', user.role || 'USER');
 
                     toast.success('Login successful - Welcome back!');
@@ -69,12 +69,12 @@ const SocialLoginButtons = () => {
     const googleLogin = useGoogleLogin({
         onSuccess: async (codeResponse) => {
             try {
-                console.log('Google popup success');                
-                const result = await googleAuthApi.loginWithGoogle(codeResponse.code);                if (result.success && result.data?.data?.user) {
+                console.log('Google popup success');
+                const result = await googleAuthApi.loginWithGoogle(codeResponse.code); if (result.success && result.data?.data?.user) {
                     const user = result.data.data.user;
                     // Save user data to localStorage
                     localStorage.setItem('userId', user.id);
-                    localStorage.setItem('email', user.name); 
+                    localStorage.setItem('name', user.name);
                     localStorage.setItem('role', user.role || 'USER');
 
                     console.log('Google popup login successful');
@@ -107,10 +107,9 @@ const SocialLoginButtons = () => {
     // Handle Facebook login
     const handleFacebookLogin = async () => {
         try {
-            setLoading('facebook');
-            const result = await loginWithFacebook();            if (result.success && result.user) {
+            setLoading('facebook'); const result = await loginWithFacebook(); if (result.success && result.user) {
                 localStorage.setItem('userId', result.user.id);
-                localStorage.setItem('email', result.user.name || result.user.email);
+                localStorage.setItem('name', result.user.name || result.user.email);
                 localStorage.setItem('role', result.user.role || 'USER');
                 console.log('Facebook login successful');
                 toast.success('Login successful - Welcome back!');
@@ -129,10 +128,9 @@ const SocialLoginButtons = () => {
     // Handle Twitter/X login
     const handleTwitterLogin = async () => {
         try {
-            setLoading('twitter');
-            const result = await loginWithTwitter();            if (result.success && result.user) {
+            setLoading('twitter'); const result = await loginWithTwitter(); if (result.success && result.user) {
                 localStorage.setItem('userId', result.user.id);
-                localStorage.setItem('email', result.user.name || result.user.email);
+                localStorage.setItem('name', result.user.name || result.user.email);
                 localStorage.setItem('role', result.user.role || 'USER');
                 console.log('Twitter login successful');
                 toast.success('Login successful - Welcome back!');

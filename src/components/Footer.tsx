@@ -1,29 +1,30 @@
 import React from 'react'
+import Image from 'next/image';
 import { assets } from '../../public/assets/assets'
 
 const Footer = () => {
   return (
-    <div className='bg-[var(--color-2)] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32'>
+    <div className='bg-[#0A0808cc] text-white pt-8 px-6 md:px-16 lg:px-24 xl:px-32 z-0'>
             <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
                 <div className='max-w-80'>
-                    <img src={assets.logo} alt="logo" className='mb-4 h-8 md:h-9 invert opacity-80' />
+                    <Image src={assets.logo} alt="logo" width={100} height={36} className='mb-4 h-8 md:h-9 invert opacity-80' />
                     <p className='text-sm'>
                         Nơi bạn có thể tìm thấy những nơi lưu trú tốt nhất với giá cả hợp lý nhất. Chúng tôi cung cấp cho bạn những trải nghiệm tuyệt vời nhất với những dịch vụ tốt nhất.
                     </p>
                     <div className='flex items-center gap-3 mt-4'>
                         {/* Instagram */}
-                        <img src={assets.instagramIcon} alt="instagraam-icon" className='w-6' />
+                        <Image src={assets.instagramIcon} alt="instagram-icon" width={24} height={24} className='w-6 bg-[#fff] rounded-[5px]' />
                         {/* Facebook */}
-                        <img src={assets.facebookIcon} alt="facebook-icon" className='w-6' />
+                        <Image src={assets.facebookIcon} alt="facebook-icon" width={24} height={24} className='w-6 bg-[#fff] rounded-[5px]' />
                         {/* Twitter */}
-                        <img src={assets.twitterIcon} alt="twitter-icon" className='w-6' />
+                        <Image src={assets.twitterIcon} alt="twitter-icon" width={24} height={24} className='w-6 bg-[#fff] rounded-[5px]' />
                         {/* Linkendin */}
-                        <img src={assets.linkendinIcon} alt="linkendin-icon" className='w-6' />
+                        <Image src={assets.linkendinIcon} alt="linkendin-icon" width={24} height={24} className='w-6 bg-[#fff] rounded-[5px]' />
                     </div>
                 </div>
 
                 <div>
-                    <p className='font-playfair text-lg text-gray-800'>COMPANY</p>
+                    <p className='font-playfair text-lg text-white'>COMPANY</p>
                     <ul className='mt-3 flex flex-col gap-2 text-sm'>
                         <li><a href="#">About</a></li>
                         <li><a href="#">Careers</a></li>
@@ -34,7 +35,7 @@ const Footer = () => {
                 </div>
 
                 <div>
-                    <p className='font-playfair text-lg text-gray-800'>SUPPORT</p>
+                    <p className='font-playfair text-lg text-white'>SUPPORT</p>
                     <ul className='mt-3 flex flex-col gap-2 text-sm'>
                         <li><a href="#">Help Center</a></li>
                         <li><a href="#">Safety Information</a></li>
@@ -45,15 +46,15 @@ const Footer = () => {
                 </div>
 
                 <div className='font-playfair max-w-80'>
-                    <p className='text-lg text-gray-800'>STAY UPDATED</p>
+                    <p className='text-lg text-white'>STAY UPDATED</p>
                     <p className='mt-3 text-sm'>
                         đang ký để nhận thông tin mới nhất về các ưu đãi và khuyến mãi đặc biệt từ chúng tôi.
                     </p>
                     <div className='flex items-center mt-4'>
-                        <input type="text" className='bg-white rounded-l border border-gray-300 h-9 px-3 outline-none' placeholder='Your email' />
+                        <input type="text" className='bg-white text-black rounded-l border border-gray-300 h-9 px-3 outline-none' placeholder='Your email' />
                         <button className='flex items-center justify-center bg-[var(--color-1)] h-9 w-9 aspect-square rounded-r'>
                             {/* Arrow icon */}
-                           <img src={assets.arrowIcon} alt="arrow-icon" className='w-3.5 invert'/>
+                           <Image src={assets.arrowIcon} alt="arrow-icon" width={14} height={14} className='w-3.5 invert'/>
                         </button>
                     </div>
                 </div>

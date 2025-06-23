@@ -1,5 +1,6 @@
 const banners = [
   {
+    id:'158461',
     src: [
       '/153685d6d4f6820b1e9764100a62337277117114.jpg',
       '/4459b16d92fe37f01fbd24ba59e39ee98303f766 (1).jpg'
@@ -9,7 +10,15 @@ const banners = [
     duration: '3 day 2 night',
     numberOfPeople: '3 people',
     price: '300$',
-    description: '5 nights and 4 days in 5 star hotel, breakfast and lunch included. Very popular during the renaissance. Passage and going through the cites of the world in classical literature.'
+     departureLocation: 'Hanoi',
+    description: '5 nights and 4 days in 5 star hotel, breakfast and lunch included. Very popular during the renaissance. Passage and going through the cites of the world in classical literature.',
+    lichtrinh: [
+      { title: 'Day 1', content: 'Arrive in Santorini, check into hotel, explore local markets.' },
+      { title: 'Day 2', content: 'Visit Oia village, enjoy sunset, relax at the beach.' },
+      { title: 'Day 3', content: 'Tour ancient ruins, shop for souvenirs, depart Santorini.' },
+    
+    ],
+    transportation: 'máy bay'
   },
   {
     src: '/153685d6d4f6820b1e9764100a62337277117114.jpg',

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface AuthUser {
     id: string;
-    email: string; // Will actually store name from response
+    name: string; // Will actually store name from response
     role: string;
 }
 
@@ -13,11 +13,11 @@ export const useAuth = () => {
     useEffect(() => {
         const checkAuth = () => {
             const userId = localStorage.getItem('userId');
-            const email = localStorage.getItem('email');
+            const name = localStorage.getItem('name');
             const role = localStorage.getItem('role');
 
-            if (userId && email) {
-                setUser({ id: userId, email, role: role || 'user' });
+            if (userId && name) {
+                setUser({ id: userId, name, role: role || 'user' });
                 setIsAuthenticated(true);
             } else {
                 setUser(null);

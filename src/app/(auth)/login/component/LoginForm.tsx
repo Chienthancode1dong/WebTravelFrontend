@@ -22,14 +22,16 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail }: LoginFormProps) =>
     const onLoginSubmit = async (data: any) => {
         try {
             setLoading(true);
-            setError(null);
+            setError(null); const response = await authApi.login(data.email, data.password);
 
-            await authApi.login(data.email, data.password);
-            try {
-                const user = await authApi.getProfile();
+            // Lưu thông tin user từ response vào localStorage
+            if (response.data && response.data.user) {
+                const user = response.data.user;
                 localStorage.setItem('userId', user.id);
-                localStorage.setItem('email', user.email);
+                localStorage.setItem('name', user.name);
                 localStorage.setItem('role', user.role || 'USER');
+
+                // Redirect dựa trên role
                 if (user.role === 'ADMIN') {
                     setTimeout(() => {
                         router.push('/admin');
@@ -39,10 +41,6 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail }: LoginFormProps) =>
                         router.push('/');
                     }, 1500);
                 }
-            } catch (error: any) {
-                const userErrorMessage = error.response?.data?.message || 'Failed to fetch user profile';
-                toast.error(`Profile Fetch Failed: ${userErrorMessage}`);
-                console.error('Profile fetch error:', userErrorMessage);
             }
             reset();
             toast.success('Login Successful!');

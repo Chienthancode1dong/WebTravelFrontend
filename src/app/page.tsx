@@ -8,7 +8,7 @@ import TourAvail from "./sections/tourAvail";
 
 export default function Home() {
   return (
-    <main className="w-full min-h-screen z-0 ">
+    <main className="w-full min-h-screen z-0 overflow-x-hidden ">
       <Header opacity="none" />
       {/* Hero Section */}
 

@@ -263,3 +263,18 @@ const BookIcon = ()=>(
 )
 
 */
+
+// Các thuộc tính phổ biến cho hotel booking:
+// - name: tên khách sạn
+// - address: địa chỉ
+// - images: mảng ảnh
+// - pricePerNight: giá mỗi đêm
+// - maxGuests: số khách tối đa
+// - amenities: mảng tiện nghi
+// - description: mô tả
+// - rating: điểm đánh giá
+// - phone: số điện thoại liên hệ
+// - email: email liên hệ
+// - checkInTime: giờ nhận phòng
+// - checkOutTime: giờ trả phòng
+// - policies: chính sách khách sạn
