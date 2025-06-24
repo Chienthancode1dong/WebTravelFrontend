@@ -151,7 +151,7 @@ useEffect (() => {
                             <td className="py-2 px-4">{tour.limitQuantity}</td>
                             <td className="py-2 px-4">{tour.price}</td>
                             <td className="py-2 px-4">
-                              <Link href={`/Tour//${postTours.id}`} className="inline-block">
+                              <Link href={`/Tour/${id}/${postTours.id}`} className="inline-block">
                                   <Button color="orange" className="px-4 py-1 text-sm">Đặt ngay</Button>
                               </Link>
                             </td>
