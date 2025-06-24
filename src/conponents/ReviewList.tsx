@@ -18,6 +18,7 @@ type ReviewListProps = {
 };
 
 const ReviewList: React.FC<ReviewListProps> = ({ reviews = [], scrollRef }) => {
+  console.log(reviews,"lllll")
   return (
     <div
       ref={scrollRef}

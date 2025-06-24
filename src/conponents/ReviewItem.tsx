@@ -18,6 +18,7 @@ type ReviewItemProps = {
 };
 
 export function ReviewItem({ review }: ReviewItemProps) {
+  console.log("review",review.user?.image) 
   return (
     
     <div

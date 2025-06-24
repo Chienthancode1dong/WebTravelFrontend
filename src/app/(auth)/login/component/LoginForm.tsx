@@ -2,53 +2,49 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
+import { toast } from 'react-toastify';
 import authApi from '@/lib/auth-api';
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import LoadingButton from "./LoadingButton";
 
-interface ToastHook {
-    showSuccess: (title: string, message?: string) => void;
-    showError: (title: string, message?: string) => void;
-    showWarning: (title: string, message?: string) => void;
-    showInfo: (title: string, message?: string) => void;
-}
-
 interface LoginFormProps {
     onForgotPassword?: () => void; // Chỉ cần callback đơn giản
     onVerificationEmail?: (email: string) => void;
-    toast: ToastHook;
 }
 
-const LoginForm = ({ onForgotPassword, onVerificationEmail, toast }: LoginFormProps) => {
+const LoginForm = ({ onForgotPassword, onVerificationEmail }: LoginFormProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, reset } = useForm();
 
     const onLoginSubmit = async (data: any) => {
         try {
             setLoading(true);
-            setError(null);
+            setError(null); const response = await authApi.login(data.email, data.password);
 
-            const response = await authApi.login(data.email, data.password);
-            // Lưu token và thông tin người dùng
-            localStorage.setItem('accessToken', response.accessToken);
-            try {
-                const user = await authApi.getProfile();
-                localStorage.setItem('userId', user.userId);
-                localStorage.setItem('email', user.username);
+            // Lưu thông tin user từ response vào localStorage
+            if (response.data && response.data.user) {
+                const user = response.data.user;
+                localStorage.setItem('userId', user.id);
+                localStorage.setItem('name', user.name);
                 localStorage.setItem('role', user.role || 'USER');
-            } catch (error: any) {
-                const userErrorMessage = error.response?.data?.message || 'Failed to fetch user profile';
-                toast.showError('Profile Fetch Failed', userErrorMessage);
-                console.error('Profile fetch error:', userErrorMessage);
-            }
 
-            toast.showSuccess('Login Successful', 'Welcome back! Redirecting to dashboard...');
-            setTimeout(() => {
-                router.push('/');
-            }, 1500);
+                // Redirect dựa trên role
+                if (user.role === 'ADMIN') {
+                    setTimeout(() => {
+                        router.push('/admin');
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        router.push('/');
+                    }, 1500);
+                }
+            }
+            reset();
+            toast.success('Login Successful!');
+
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
             const errorCode = error.response?.status;
@@ -60,7 +56,7 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail, toast }: LoginFormPr
                 try {
                     // Tự động gửi lại email verification
                     await authApi.resendOTP(data.email);
-                    toast.showInfo('Email Verification Required', 'Verification code has been sent to your email');
+                    toast.info('Email Verification Required - Verification code has been sent to your email');
 
                     // Mở modal verification
                     if (onVerificationEmail) {
@@ -69,7 +65,7 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail, toast }: LoginFormPr
                 } catch (resendError: any) {
                     console.error('Failed to resend OTP:', resendError);
                     // Nếu gửi email thất bại, vẫn mở modal để user có thể resend manually
-                    toast.showWarning('Email Verification Required', 'Please verify your email to continue. Click resend in the verification modal.');
+                    toast.warning('Email Verification Required - Please verify your email to continue. Click resend in the verification modal.');
                     if (onVerificationEmail) {
                         onVerificationEmail(data.email);
                     }
@@ -77,7 +73,7 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail, toast }: LoginFormPr
             } else {
                 // Các lỗi khác (sai password, email không tồn tại, etc.)
                 setError(errorMessage);
-                toast.showError('Login Failed', errorMessage);
+                toast.error(`Login Failed: ${errorMessage}`);
             }
         } finally {
             setLoading(false);
@@ -116,8 +112,7 @@ const LoginForm = ({ onForgotPassword, onVerificationEmail, toast }: LoginFormPr
                 >
                     Forgot Password?
                 </span>
-            </div>            
-            
+            </div>
             <LoadingButton
                 type="submit"
                 loading={loading}

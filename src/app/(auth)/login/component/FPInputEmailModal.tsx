@@ -1,21 +1,15 @@
 'use client'
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import authApi from '@/lib/auth-api';
 import InputField from './InputField';
 import LoadingButton from './LoadingButton';
-
-interface ToastHook {
-    showSuccess: (title: string, message?: string) => void;
-    showError: (title: string, message?: string) => void;
-    showInfo: (title: string, message?: string) => void;
-}
 
 interface ForgotPasswordEmailModalProps {
     isOpen: boolean;
     onClose: () => void;
     onVerificationEmail: (email: string) => void; // Callback để mở modal reset password
-    toast: ToastHook;
 }
 
 interface ForgotPasswordEmailForm {
@@ -25,8 +19,7 @@ interface ForgotPasswordEmailForm {
 const FPInputEmailModal = ({
     isOpen,
     onClose,
-    onVerificationEmail,
-    toast
+    onVerificationEmail
 }: ForgotPasswordEmailModalProps) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -40,7 +33,7 @@ const FPInputEmailModal = ({
             // Gửi email reset password
             await authApi.forgotPassword(data.email);
 
-            toast.showSuccess('Reset Email Sent', 'Please check your email for password reset instructions');
+            toast.success('Reset Email Sent - Please check your email for password reset instructions');
 
             // Gọi callback với email để mở modal reset password
             onVerificationEmail(data.email);
@@ -50,7 +43,7 @@ const FPInputEmailModal = ({
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Failed to send reset email';
             setError(errorMessage);
-            toast.showError('Failed to Send Email', errorMessage);
+            toast.error(`Failed to Send Email: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -80,20 +73,20 @@ const FPInputEmailModal = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">                    
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <InputField
-                    label="Email Address"
-                    type="email"
-                    register={(options: any) => register("email", {
-                        required: "Email address is required",
-                        pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Please enter a valid email address"
-                        }
-                    })}
-                    required={true}
-                    placeholder="Enter your registered email address"
-                />
+                        label="Email Address"
+                        type="email"
+                        register={(options: any) => register("email", {
+                            required: "Email address is required",
+                            pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: "Please enter a valid email address"
+                            }
+                        })}
+                        required={true}
+                        placeholder="Enter your registered email address"
+                    />
 
 
                     {/* Validation Error */}

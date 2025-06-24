@@ -5,6 +5,8 @@ import { assets, facilityIcons, roomCommonData, roomsDummyData } from '../../../
 import StartRating from '../../../components/StartRating'
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
+import authApi from '@/lib/auth-api'
+
 // Type definitions for room and hotel
 interface UserType {
   _id: string;
@@ -47,6 +49,7 @@ const RoomDetails = () => {
     const params = useParams() as { id?: string };
     const id = params.id;
     const router = useRouter();
+    const roomId = params.id;
     console.log("Room ID:", id); // Kiểm tra xem id có được lấy đúng không
     const [room, setRoom] = useState<RoomType | null>(null);
     const [mainImage, setMainImage] = useState<string | StaticImageData>("");
@@ -56,7 +59,21 @@ const RoomDetails = () => {
       guest: ''
     });
 
+    const getRoomById = async()=>{
+        try {
+            if(roomId) {
+                const res = await authApi.getRoomById(roomId)
+                console.log("room",res.data)
+            }
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
+        getRoomById()
+        console.log(id)
         if (!id) return; // Nếu chưa có id thì không làm gì
         // const foundRoom = roomsDummyData.find((room) => String(room._id) === String(id));
           for (let i = 0; i < roomsDummyData.length; i++) {

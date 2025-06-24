@@ -64,8 +64,8 @@ export const authApi = {
             password
         });
         return response.data;
-    },
-
+    },  
+    
     // Logout
     async logout() {
         const response = await apiClient.post(ENDPOINTS.LOGOUT);
@@ -112,11 +112,33 @@ export const authApi = {
     },
 
     async getAllTours() {
-        const response = await apiClient.get(ENDPOINTS.GETTOURS);
+        const response = await apiClient.get(ENDPOINTS.TOUR);
         return response.data;
     },
     async getTourById(id: string) {
-        const response = await apiClient.get(`${ENDPOINTS.GETTOURS}/${id}`);
+        const response = await apiClient.get(`${ENDPOINTS.TOUR}/${id}`);
+        return response.data;
+    },
+    async createTour(data: any) {
+        const response = await apiClient.post(ENDPOINTS.TOUR, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+        return response.data;
+    },
+    async createScheduleTour(id: string, data: any) {
+    const response = await apiClient.post(
+        `${ENDPOINTS.SCHEDULE}/${id}`,
+        data,
+        { headers: { 'Content-Type': 'application/json' } }
+    );
+    return response.data;
+    },
+
+    async deleteScheduleTourItem(id: string) {
+        const response = await apiClient.delete(`${ENDPOINTS.SCHEDULE}/${id}`);
+        return response.data;
+    },
+
+    async deleteTour(id: string) {
+        const response = await apiClient.delete(`${ENDPOINTS.TOUR}/${id}`);
         return response.data;
     },
 
@@ -129,7 +151,16 @@ export const authApi = {
     async getAllFeedback (){
          const response = await apiClient.get(ENDPOINTS.FEEDBACK)
         return response.data
+    },
+    //get Rooom By Id
+    async getRoomById(roomId:string){
+        const response = await apiClient.get(ENDPOINTS.ROOMBYID(roomId))
+        return response.data
+    },
+    //get aall room
+    async getallRoom (){
+        const response = await apiClient.get(ENDPOINTS.ROOM)
+        return response.data
     }
 };
-
 export default authApi;
