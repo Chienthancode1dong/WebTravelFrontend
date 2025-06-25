@@ -15,6 +15,7 @@ export const ENDPOINTS = {
   REFRESH_TOKEN: '/auth/refresh',
   LOGOUT: '/auth/logout',
   PROFILE: '/auth/profile',
+  INFORMATION: (userId: string) => `/users/profile/${userId}`,
   LOGIN_FACEBOOK: '/auth/facebook',
   CREATEHOTEL:'hotel',
   TOUR: 'postTour',

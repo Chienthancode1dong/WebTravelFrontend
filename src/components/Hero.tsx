@@ -10,7 +10,7 @@ const Hero = () => {
       <h1 className='font-playfair text-2xl md:text-6xl md:text-[56px] md:leading-[56px] z-10  max-w-xl mt-4 '>Start your unforgettable journey with us. </h1>
       <p className='max-w-130 mt-2 text-sm md:text-base '>The best travel for your jouney begins now</p>
 
-      <form className='z-10 bg-white text-gray-500 rounded-lg px-6 py-4 m flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto'>
+      <form className='z-10 bg-white text-gray-500 rounded-lg px-6 py-4 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto'>
 
             <div>
                 <div className='flex items-center gap-2'>

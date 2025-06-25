@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { toast } from 'react-toastify';
-import authApi from '@/lib/auth-api';
+import {authApi} from '@/lib/auth-api';
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import LoadingButton from "./LoadingButton";

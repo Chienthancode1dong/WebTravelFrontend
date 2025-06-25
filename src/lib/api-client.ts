@@ -58,7 +58,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
 
       } catch (refreshError) {
-        // Refresh failed, clear auth and redirect
         processQueue(refreshError);
         localStorage.clear();
         window.location.href = '/login';

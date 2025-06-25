@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import authApi from '@/lib/auth-api';
+import {authApi} from '@/lib/auth-api';
 
 interface EmailVerificationModalProps {
     isOpen: boolean;

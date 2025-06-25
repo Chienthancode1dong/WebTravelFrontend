@@ -101,7 +101,7 @@ const Header = (props: HeaderProps) => {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger>Xin chào, {user?.name}</DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className='bg-white'>
                 <DropdownMenuLabel className="text-center">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

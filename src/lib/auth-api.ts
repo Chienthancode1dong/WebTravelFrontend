@@ -1,6 +1,7 @@
 import { Hotel } from 'lucide-react';
 import apiClient from '@/lib/api-client';
 import { ENDPOINTS } from '@/lib/api-config';
+import { info } from 'console';
 
 // Simple Auth API functions
 export const authApi = {
@@ -65,15 +66,6 @@ export const authApi = {
         });
         return response.data;
     },  
-    
-    // Logout
-    async logout() {
-        const response = await apiClient.post(ENDPOINTS.LOGOUT);
-        // Clear local storage
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
-        return response.data;
-    },
 
     // Get Profile
     async getProfile() {

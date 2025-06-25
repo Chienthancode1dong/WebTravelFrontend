@@ -26,8 +26,6 @@ export const useAuth = () => {
         };
 
         checkAuth();
-
-        // Listen for localStorage changes (multi-tab sync)
         window.addEventListener('storage', checkAuth);
         return () => window.removeEventListener('storage', checkAuth);
     }, []);
